@@ -31,25 +31,16 @@ uml2django
 ==========
 Generate Django code from UML class diagrams
 
-
-A longer description of your project goes here...
-
-
-
-#########
-**Model**
-#########
-
 **Fields**
 **********
 
-**Relationships**
-*****************
-Many-to-many
-************
-Many-to-one
-***********
-One-to-one
-**********
+**Model Relationships**
+***********************
+* Many-to-many
+
+
+* Many-to-one
+
+* One-to-one
 
 
