@@ -8,11 +8,14 @@ References:
 
 import sys
 from typing import List
-from xml.dom import minidom
-from uml2django.processDocument import generateXmiFromPuml, getAppsNamesFromDocument
-from uml2django.logger import _logger, setup_logging
+from uml2django.processDocument import (
+    readXmiFile,
+    generateXmiFromPuml,
+    getAppsNamesFromDocument,
+    getModelsDefinitionsFromDocument
+)
+from uml2django.logger import setup_logging
 from uml2django import XmiArgoUmlTagsName
-from uml2django.readXmiFile import readXmiFile
 from uml2django.argparser import parse_args
 
 __author__ = "Joao Victor Soares da Cunha"
@@ -42,14 +45,23 @@ def main(args: List[str]):
     if xmi_filename is None:
         xmi_filename = generateXmiFromPuml(puml_filename)
     document_object_model = readXmiFile(xmi_filename)
-    project_name = str()
+    project_name = xmi_filename[:-5]
     apps_names = getAppsNamesFromDocument(document_object_model)
-    classes_without_associations = []
-    associations = []
+    models_definitions = getModelsDefinitionsFromDocument(document_object_model)
+
+    # for app_name in apps_names:
+        # for model in models_definitions:
+        #     model_name = model.attributes.get("name").value
+        #     if (model.attributes.get("namespace").value == app_name):
+        #         model_attributes = model.getElementsByTagName(XmiArgoUmlTagsName.XMI_ARGO_ATTRIBUTE_TAG_NAME)
+        #         for attribute in model_attributes:
+        #             print(attribute.attributes.get("name").value)
+
+
     # root element is a collection of minidom.Element and 
     # some minidom.Text that are not used
     # the root element encloses all classes and associations
-    root_element = document_object_model.documentElement.getElementsByTagName(XmiArgoUmlTagsName.XMI_ARGO_ROOT_NAMESPACE_TAG_NAME)[0]
+    # root_element = document_object_model.documentElement.getElementsByTagName(XmiArgoUmlTagsName.XMI_ARGO_ROOT_NAMESPACE_TAG_NAME)[0]
     sys.exit(1)
 
 

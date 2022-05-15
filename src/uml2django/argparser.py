@@ -4,12 +4,24 @@ import logging
 from uml2django import __version__
 from typing import List
 
-def is_valid_file(parser, arg):
+
+def is_valid_file(parser: argparse.ArgumentParser, arg: str) -> str:
+    """Checks that filename given as argument is valid
+
+    Args:
+        parser (argparse.ArgumentParser): The ArgumentParser instance
+        arg (str): The filename given as argument
+
+    Returns:
+        str: The filename given as argument
+    """
+
     if not os.path.exists(arg):
         parser.error("The file %s does not exist!" % arg)
     else:
         return arg
-    
+
+
 def parse_args(args : List[str]) -> argparse.Namespace:
     """Parse command line parameters
 
@@ -20,17 +32,19 @@ def parse_args(args : List[str]) -> argparse.Namespace:
     Returns:
       :obj:`argparse.Namespace`: command line parameters namespace
     """
-    parser = argparse.ArgumentParser(description="Just a Fibonacci demonstration")
+    parser = argparse.ArgumentParser(
+        description="Generate Django code from UML class diagram"
+    )
 
-    parser.add_argument('--xmi_file',
+    parser.add_argument('--xmi',
                         dest="xmi_file", metavar="FILE",
                         help="path to XMI file",
-                        type=lambda x: is_valid_file(parser, x))
+                        type=lambda arg: is_valid_file(parser, arg))
 
-    parser.add_argument('--puml_file',
+    parser.add_argument('--puml',
                         dest="puml_file", metavar="FILE",
                         help="path to PlantUml file",
-                        type=lambda x: is_valid_file(parser, x))
+                        type=lambda arg: is_valid_file(parser, arg))
 
     parser.add_argument(
         "--version",
@@ -46,7 +60,7 @@ def parse_args(args : List[str]) -> argparse.Namespace:
         action="store_const",
         const=logging.INFO,
     )
-    
+
     parser.add_argument(
         "-vv",
         "--very-verbose",
@@ -55,7 +69,7 @@ def parse_args(args : List[str]) -> argparse.Namespace:
         action="store_const",
         const=logging.DEBUG,
     )
-    
+
     parsed_args = parser.parse_args(args)
     if not (parsed_args.xmi_file or parsed_args.puml_file):
         parser.error('No file given, add --xmi_file or -puml_file')
