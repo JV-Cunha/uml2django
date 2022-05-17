@@ -1,3 +1,5 @@
 <h2 class="form-title">"${model.name} Details"</h2>
-<h1>${model.name} Details</h1>
-<h2>{{object}}</h2>
+<h1>${model.name_lower} Details</h1>
+#for $field in ${model.fields} 
+    {{ object.${field.name} }}
+#end for

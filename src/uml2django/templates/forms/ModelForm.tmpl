@@ -3,12 +3,12 @@ from django import forms
 from ${model.app_name}.models import ${model.name}
  
 
-class GeeksForm(forms.ModelForm):
+class ${model.name}Form(forms.ModelForm):
     # specify the name of model to use
     class Meta:
-        model = GeeksModel
+        model = ${model.name}
         fields = (
-            #for $field in ${model.fields}
+            #for $field in $model.fields
             '${field.name}',
             #end for
         )

@@ -14,8 +14,9 @@ def getViewsTemplatePath(filename: str) -> str:
 
 
 
-BASE_MODEL_TEMPLATE_PATH = getTemplatePath("base_model.tmpl")
-MODEL_TEMPLATE_PATH = getTemplatePath("model.tmpl")
+BASE_MODEL_TEMPLATE_PATH = getTemplatePath("BaseModel.tmpl", "models")
+MODEL_TEMPLATE_PATH = getTemplatePath("Model.tmpl", "models")
+MODEL_FORM_TEMPLATE_PATH = getTemplatePath("ModelForm.tmpl", "forms")
 
 CREATE_VIEW_TEMPLATE_PATH = getViewsTemplatePath("CreateView.tmpl")
 DELETE_VIEW_TEMPLATE_PATH = getViewsTemplatePath("DeleteView.tmpl")
