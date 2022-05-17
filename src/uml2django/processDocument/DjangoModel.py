@@ -16,6 +16,7 @@ from uml2django.processDocument.DjangoModelField import DjangoModelField
 
 class DjangoModel():
     element = None
+    xmi_id = None
     app_name = str()
     name = str()
     fields = list()
@@ -28,12 +29,29 @@ class DjangoModel():
     @classmethod
     def generateCodeFromDocument(cls, document: minidom.Document) -> list:
         for model in cls.getFromDocument(document):
-            model.generateModelPythonFile()
-            model.generateClassBasedViews()
-            model.generateTemplates()
+            model.generate_model_python_file()
+            model.generate_model_form()
+            model.generate_class_based_views()
+            model.generate_templates()
         return None
 
-    def generateTemplates(self):
+    def generate_model_form(self):
+        Path(self.app_forms_path).mkdir(parents=True, exist_ok=True)
+        t = Template(file=templates.MODEL_FORM_TEMPLATE_PATH)
+        t.model = self
+        model_form_file_path = os.path.join(
+            self.app_forms_path, f"{self.name}ModelForm.py"
+        )
+        # write model form file
+        with open(model_form_file_path, "w") as text_file:
+            text_file.write(str(t))
+            text_file.close()
+        # add import to __init__.py
+        with open(self.app_forms_init_path, "a") as text_file:
+                text_file.write(f"from .{self.name}ModelForm import {self.name}ModelForm\n")
+                text_file.close()
+
+    def generate_templates(self):
         Path(self.app_templates_path).mkdir(parents=True, exist_ok=True)
         for action in self.actions:
             cap_action = action.capitalize()
@@ -52,7 +70,7 @@ class DjangoModel():
                 template_file.close()
                 
                 
-    def generateClassBasedViews(self):
+    def generate_class_based_views(self):
         views = self.actions
         Path(self.model_views_path).mkdir(parents=True, exist_ok=True)
         for view_name in views:
@@ -78,13 +96,10 @@ class DjangoModel():
             with open(self.app_views_init_file_path, "a") as app_views_init_file:
                 app_views_init_file.write(f"from .{self.name} import {self.name}{cap_view_name}View\n")
                 app_views_init_file.close()
-    
-    
 
-    
     @classmethod
     def getFromDocument(cls, document: minidom.Document) -> list:
-        """Get and return the classes that have its name attribute setted
+        """Get the xmi classes that have its name attribute setted
         Classes whitout name are used to represent association,
         they have xmi_id attribute setted instead
 
@@ -112,30 +127,21 @@ class DjangoModel():
         self.app_name = element.attributes.get("namespace").value
         self.setFieldsFromElement()
         self.setPaths()
-        
-        
 
-    def generateModelPythonFile(self):
+    def generate_model_python_file(self):
         model = self
         t = Template(file=templates.MODEL_TEMPLATE_PATH)
         t.model = self
-        app_models_path = os.path.join(
-            config.OUTPUT_PATH,
-            f"{model.app_name}",
-            "models"
-        )
-
-        Path(app_models_path).mkdir(parents=True, exist_ok=True)
-        init_file_path = os.path.join(app_models_path, "__init__.py")
-        model_file_path = os.path.join(app_models_path, f"{model.name}.py")
+        Path(self.app_models_path).mkdir(parents=True, exist_ok=True)
+        model_file_path = os.path.join(self.app_models_path, f"{model.name}.py")
         # write model file
         with open(model_file_path, "w") as text_file:
             text_file.write(str(t))
             text_file.close()
         # add import to __init__.py
-        with open(init_file_path, "a") as text_file:
-                text_file.write(f"from .{model.name} import {model.name}\n")
-                text_file.close()
+        with open(self.app_models_init_path, "a") as text_file:
+            text_file.write(f"from .{self.name} import {self.name}\n")
+            text_file.close()
     
     def setNamesFromElement(self):
         self.name = self.element.attributes.get("name").value.lower().capitalize()
@@ -155,26 +161,58 @@ class DjangoModel():
         self.fields = attributes
 
     def setPaths(self):
+        # App path
         self.app_path = os.path.join(
             config.OUTPUT_PATH,
             self.app_name,
         )
+        # Models path
+        self.app_models_path = os.path.join(
+            config.OUTPUT_PATH,
+            self.app_name,
+            "models"
+        )
+        # Models __init__.py path
+        self.app_models_init_path = os.path.join(
+            self.app_models_path,
+            "__init__.py"
+        )
+        # App Forms path
+        self.app_forms_path = os.path.join(
+            self.app_path,
+            "forms",
+        )
+        # App Forms __init__.py path
+        self.app_forms_init_path = os.path.join(
+            self.app_path,
+            "forms",
+            "__init__.py"
+        )
+        # App Views path
+        # example: some_django_app/views/
         self.app_views_path = os.path.join(
             self.app_path,
             "views",
         )
+        # App Views Path
+        # example: some_django_app/views/__init__.py
         self.app_views_init_file_path = os.path.join(
             self.app_views_path,
             "__init__.py"
         )
+        # Model Views Path
+        # example: some_django_app/views/some_model/ 
         self.model_views_path = os.path.join(
             self.app_views_path,
             self.name,
         )
+        # Model Views __init__ Path
+        # example: some_django_app/views/some_model/__init__.py
         self.model_views_init_file_path = os.path.join(
             self.model_views_path, "__init__.py"
         )
-        
+        # App Templates paths
+        # example: some_django_app/templates/
         self.app_templates_path = os.path.join(
             self.app_path,
             "templates",
