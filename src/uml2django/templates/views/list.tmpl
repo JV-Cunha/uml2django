@@ -1,0 +1,7 @@
+from django.views.generic import ListView
+
+from ${model.app_name}.models import ${model.name}
+
+class ${model.name}ListView(ListView):
+    model = ${model.name}
+    template_name = "${model.name.lower()}/${model.name.lower()}ListView.html"

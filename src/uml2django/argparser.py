@@ -3,6 +3,8 @@ import argparse
 import logging
 from uml2django import __version__
 from typing import List
+from uml2django import config
+
 
 
 def is_valid_file(parser: argparse.ArgumentParser, arg: str) -> str:
@@ -20,6 +22,12 @@ def is_valid_file(parser: argparse.ArgumentParser, arg: str) -> str:
         parser.error("The file %s does not exist!" % arg)
     else:
         return arg
+
+def is_valid_directory(parser: argparse.ArgumentParser, path: str):
+    if os.path.isdir(path):
+        return path
+    else:
+        parser.error("The directory %s does not exist!" % path)
 
 
 def parse_args(args : List[str]) -> argparse.Namespace:
@@ -46,6 +54,10 @@ def parse_args(args : List[str]) -> argparse.Namespace:
                         help="path to PlantUml file",
                         type=lambda arg: is_valid_file(parser, arg))
 
+    parser.add_argument('-o', '--out',
+                        dest="output_path", metavar="PATH",
+                        help="output path for generated code",
+                        type=lambda arg: is_valid_directory(parser, arg))
     parser.add_argument(
         "--version",
         action="version",
@@ -72,6 +84,9 @@ def parse_args(args : List[str]) -> argparse.Namespace:
 
     parsed_args = parser.parse_args(args)
     if not (parsed_args.xmi_file or parsed_args.puml_file):
-        parser.error('No file given, add --xmi_file or -puml_file')
-
+        parser.error('No file given, add --xmi or --puml')
+    
+    if parsed_args.output_path:
+        config.OUTPUT_PATH = parsed_args.output_path
+        print(config.OUTPUT_PATH)
     return parsed_args

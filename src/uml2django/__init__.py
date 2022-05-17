@@ -36,9 +36,9 @@ finally:
         # template_file_content = read_file(template_file_path)
         #     template_rendered = string.Template(template_file_content).safe_substitute(
         #         app_name=app_name,
-        #         model_name=model_name,
+        #         model.name=model.name,
         #         model_name_u_lower=model_name_underscore,
-        #         model_name_lower=model_name.lower(),
+        #         model_name_lower=model.name.lower(),
         #         crud_item=crud_item,
         #         crud_item_capitalize=crud_item.capitalize()
         #     )

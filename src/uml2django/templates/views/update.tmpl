@@ -1,0 +1,9 @@
+from django.views.generic.edit import UpdateView
+from django.urls import reverse_lazy
+
+from ${model.app_name}.models import ${model.name}
+
+class ${model.name}UpdateView(UpdateView):
+    model = ${model.name}
+    fields = '__all__'
+    success_url = reverse_lazy('${model.name}_list')

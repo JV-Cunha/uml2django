@@ -11,12 +11,10 @@ from typing import List
 from uml2django.processDocument import (
     readXmiFile,
     generateXmiFromPuml,
-    getAppsNamesFromDocument,
-    getModelsDefinitionsFromDocument
 )
 from uml2django.logger import setup_logging
-from uml2django import XmiArgoUmlTagsName
 from uml2django.argparser import parse_args
+from uml2django.processDocument.DjangoModel import DjangoModel
 
 __author__ = "Joao Victor Soares da Cunha"
 __copyright__ = "Joao Victor Soares da Cunha"
@@ -46,16 +44,10 @@ def main(args: List[str]):
         xmi_filename = generateXmiFromPuml(puml_filename)
     document_object_model = readXmiFile(xmi_filename)
     project_name = xmi_filename[:-5]
-    apps_names = getAppsNamesFromDocument(document_object_model)
-    models_definitions = getModelsDefinitionsFromDocument(document_object_model)
+    # apps_names = getAppsNamesFromDocument(document_object_model)
+    models = DjangoModel.generateCodeFromDocument(document_object_model)
 
-    # for app_name in apps_names:
-        # for model in models_definitions:
-        #     model_name = model.attributes.get("name").value
-        #     if (model.attributes.get("namespace").value == app_name):
-        #         model_attributes = model.getElementsByTagName(XmiArgoUmlTagsName.XMI_ARGO_ATTRIBUTE_TAG_NAME)
-        #         for attribute in model_attributes:
-        #             print(attribute.attributes.get("name").value)
+    
 
 
     # root element is a collection of minidom.Element and 

@@ -1,0 +1,1 @@
+OUTPUT_PATH = "uml2django_output"

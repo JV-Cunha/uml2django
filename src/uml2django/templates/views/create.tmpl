@@ -1,0 +1,15 @@
+
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+
+from ${model.app_name}.models import ${model.name}
+
+class ${model.name}CreateView(CreateView):
+    model = ${model.name}
+    fields = (
+        #for $field in $model.fields 
+        '$field.name', 
+        #end for
+        )
+    #template_name = "${model.name}/${model.name}_create.html"
+    success_url = reverse_lazy('${model.name}_list')
