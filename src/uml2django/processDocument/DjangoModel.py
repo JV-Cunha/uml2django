@@ -2,6 +2,7 @@ import os
 import sys
 from xml.dom import minidom
 from Cheetah.Template import Template
+import inflect
 from uml2django import templates
 from uml2django import config
 from uml2django.XmiArgoUmlTagsName import (
@@ -12,7 +13,6 @@ from uml2django.logger import _logger
 from pathlib import Path
 
 from uml2django.processDocument.DjangoModelField import DjangoModelField
-        
 
 class DjangoModel():
     element = None
@@ -20,29 +20,52 @@ class DjangoModel():
     name = str()
     fields = list()
     views_path = str()
+    actions = [
+        'create', 'delete', 'detail',
+        'list', 'update',
+    ]
 
     @classmethod
     def generateCodeFromDocument(cls, document: minidom.Document) -> list:
         for model in cls.getFromDocument(document):
             model.generateModelPythonFile()
             model.generateClassBasedViews()
+            model.generateTemplates()
         return None
 
+    def generateTemplates(self):
+        Path(self.app_templates_path).mkdir(parents=True, exist_ok=True)
+        for action in self.actions:
+            cap_action = action.capitalize()
+            t = Template(
+                file=templates.getTemplatePath(
+                    directory="templates",
+                    filename=f"template_{action}.tmpl"
+                )
+            )
+            t.model = self
+            template_file_path = os.path.join(
+                self.app_templates_path, f"{self.name}_{cap_action}.html"
+            )
+            with open(template_file_path, "w") as template_file:
+                template_file.write(str(t))
+                template_file.close()
+                
+                
     def generateClassBasedViews(self):
-        self.generateViews()
-
-    def generateViews(self):
-        views = [
-            'create', 'delete', 'detail',
-            'list', 'update',
-        ]
-        Path(self.views_path).mkdir(parents=True, exist_ok=True)
+        views = self.actions
+        Path(self.model_views_path).mkdir(parents=True, exist_ok=True)
         for view_name in views:
             cap_view_name = view_name.capitalize()
-            t = Template(file=templates.getViewsTemplatePath(f"{view_name}.tmpl"))
+            t = Template(
+                file=templates.getTemplatePath(
+                    directory="views",
+                    filename=f"{cap_view_name}View.tmpl"
+                )
+            )
             t.model = self
             view_file_path = os.path.join(
-                self.views_path, f"{self.name}{cap_view_name}View.py"
+                self.model_views_path, f"{self.name}{cap_view_name}View.py"
             )
             with open(view_file_path, "w") as view_file:
                 view_file.write(str(t))
@@ -56,22 +79,7 @@ class DjangoModel():
                 app_views_init_file.write(f"from .{self.name} import {self.name}{cap_view_name}View\n")
                 app_views_init_file.close()
     
-    # def generateListView(self):
-    #     Path(self.views_path).mkdir(parents=True, exist_ok=True)
-    #     t = Template(file=templates.LIST_VIEW_TEMPLATE_PATH)
-    #     t.model = self
-    #     list_view_file_path = os.path.join(self.views_path, f"{self.name}ListView.py")
-    #     with open(list_view_file_path, "w") as list_view_file:
-    #         list_view_file.write(str(t))
-    #         list_view_file.close()
-    #     # add import to __init__.py inside model views path
-    #     with open(self.model_views_init_file_path, "a") as model_views_init_file:
-    #         model_views_init_file.write(f"from .{self.name}ListView import {self.name}ListView\n")
-    #         model_views_init_file.close()
-    #     # add import to __init__.py inside app views path
-    #     with open(self.app_views_init_file_path, "a") as app_views_init_file:
-    #         app_views_init_file.write(f"from .{self.name} import {self.name}ListView\n")
-    #         app_views_init_file.close()
+    
 
     
     @classmethod
@@ -100,26 +108,13 @@ class DjangoModel():
             _logger.debug("An element must be given")
             sys.exit(1)
         self.element = element
-        self.setNameFromElement()
+        self.setNamesFromElement()
         self.app_name = element.attributes.get("namespace").value
         self.setFieldsFromElement()
+        self.setPaths()
         
-        # set views paths
-        print(config.OUTPUT_PATH)
-        self.views_path = os.path.join(
-            config.OUTPUT_PATH,
-            f"{self.app_name}",
-            "views",
-            f"{self.name}",
-        )
-        self.app_views_init_file_path = os.path.join(
-            Path(self.views_path).parent,
-            "__init__.py"
-        )
-        self.model_views_init_file_path = os.path.join(
-            self.views_path, "__init__.py"
-        )
-    
+        
+
     def generateModelPythonFile(self):
         model = self
         t = Template(file=templates.MODEL_TEMPLATE_PATH)
@@ -131,7 +126,7 @@ class DjangoModel():
         )
 
         Path(app_models_path).mkdir(parents=True, exist_ok=True)
-        init_file_path = os.path.join(app_models_path, "__init__.py")                
+        init_file_path = os.path.join(app_models_path, "__init__.py")
         model_file_path = os.path.join(app_models_path, f"{model.name}.py")
         # write model file
         with open(model_file_path, "w") as text_file:
@@ -142,8 +137,10 @@ class DjangoModel():
                 text_file.write(f"from .{model.name} import {model.name}\n")
                 text_file.close()
     
-    def setNameFromElement(self):
+    def setNamesFromElement(self):
         self.name = self.element.attributes.get("name").value.lower().capitalize()
+        self.name_lower = self.name.lower()
+        self.name_plural = inflect.engine().plural(self.name)
         return self.name
     
     def setFieldsFromElement(self):
@@ -156,3 +153,33 @@ class DjangoModel():
                 )
             )
         self.fields = attributes
+
+    def setPaths(self):
+        self.app_path = os.path.join(
+            config.OUTPUT_PATH,
+            self.app_name,
+        )
+        self.app_views_path = os.path.join(
+            self.app_path,
+            "views",
+        )
+        self.app_views_init_file_path = os.path.join(
+            self.app_views_path,
+            "__init__.py"
+        )
+        self.model_views_path = os.path.join(
+            self.app_views_path,
+            self.name,
+        )
+        self.model_views_init_file_path = os.path.join(
+            self.model_views_path, "__init__.py"
+        )
+        
+        self.app_templates_path = os.path.join(
+            self.app_path,
+            "templates",
+        )
+        self.model_templates_path = os.path.join(
+            self.app_templates_path,
+            self.name,
+        )

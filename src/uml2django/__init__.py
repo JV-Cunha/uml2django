@@ -15,31 +15,3 @@ except PackageNotFoundError:  # pragma: no cover
     __version__ = "unknown"
 finally:
     del version, PackageNotFoundError
-
-
-
-
-
-
-# for dom_element in root_element.childNodes:
-    #     _logger.debug(dom_element.parentNode)
-    #     if dom_element.__class__ == minidom.Element:
-    #         if dom_element.tagName == XmiArgoUmlTagsName.XMI_ARGO_CLASS_TAG_NAME:
-    #             (classes_without_associations.append(dom_element))
-    #             
-                    
-
-    # print(classes_without_associations)
-    # for class_without_association in classes_without_associations:
-        # class_name = class_without_association.attributes.get("name").value.lower().capitalize()
-        
-        # template_file_content = read_file(template_file_path)
-        #     template_rendered = string.Template(template_file_content).safe_substitute(
-        #         app_name=app_name,
-        #         model.name=model.name,
-        #         model_name_u_lower=model_name_underscore,
-        #         model_name_lower=model.name.lower(),
-        #         crud_item=crud_item,
-        #         crud_item_capitalize=crud_item.capitalize()
-        #     )
-    # print(associations)

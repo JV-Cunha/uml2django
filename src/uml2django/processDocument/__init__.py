@@ -10,17 +10,6 @@ from uml2django.logger import _logger
 from uml2django.XmiArgoUmlTagsName import XMI_ARGO_ATTRIBUTE_TAG_NAME, XMI_ARGO_CLASS_TAG_NAME
 from uml2django import templates
 
-import re
-def pluralize(noun):
-    if re.search('[sxz]$', noun):
-        return re.sub('$', 'es', noun)
-    elif re.search('[^aeioudgkprt]h$', noun):
-        return re.sub('$', 'es', noun)
-    elif re.search('[^aeiou]y$', noun):
-        return re.sub('y$', 'ies', noun)
-    else:
-        return noun + 's'
-
 
 def readXmiFile(filename: str) -> minidom.Document:
     """Try to Read XMI File from given filename
