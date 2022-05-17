@@ -11,10 +11,11 @@ class ${model.name}(models.Model):
 #end for
     
     class Meta:
-        verbose_name = "${model.name.lower()}"
-        # verbose_name_plural = "universities"
+        verbose_name = "${model.name_lower}"
+        verbose_name_plural = "${model.name_plural.lower()}"
+
     # def __str__(self): 
     #     return self.
 
     def get_absolute_url(self):
-        return reverse("${model.name.lower()}_detail", args=[str(self.id)])
+        return reverse("${model.name_lower}-detail", args=[str(self.id)])

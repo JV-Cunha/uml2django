@@ -1,0 +1,25 @@
+<h2 class="form-title">${model.name}</h2>
+
+<table class="table table-fluid">
+    <thead>
+        <tr>
+            <th>${model.name}</th>
+            <th>View</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ${model.name_lower} in object_list %}
+        <tr>
+            <td>{{ ${model.name_lower} }}</td>
+            <td><a href="{% url "${model.name_lower}-detail" ${model.name_lower}.id %}">view</a></td>
+            <td><a href="{% url "${model.name_lower}-update" ${model.name_lower}.id %}">edit</a></td>
+            <td><a href="{% url "${model.name_lower}-delete" ${model.name_lower}.id %}">delete</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url "${model.name_lower}-create" %}">New</a>
+</div>
