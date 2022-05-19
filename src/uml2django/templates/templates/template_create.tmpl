@@ -1,3 +1,14 @@
+## {% extends "base.html" %}
+## {% load i18n %}
+## {% load static%}
+## 
+## {% load crispy_forms_tags %}
+## 
+## {% block page_title %}
+## {% trans "$model.name Register" %}
+## {% endblock page_title %}
+## 
+## {% block base_content %}
 <h2 class="form-title">Add ${model.name}</h2>
     <form class="" method="post">
         {% csrf_token %}

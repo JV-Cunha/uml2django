@@ -5,7 +5,7 @@ from Cheetah.Template import Template
 import inflect
 from uml2django import templates
 from uml2django import config
-from uml2django.XmiArgoUmlTagsName import (
+from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_ATTRIBUTE_TAG_NAME,
     XMI_ARGO_CLASS_TAG_NAME
 )
@@ -63,7 +63,7 @@ class DjangoModel():
             )
             t.model = self
             template_file_path = os.path.join(
-                self.app_templates_path, f"{self.name}_{cap_action}.html"
+                self.app_templates_path, f"{self.name_lower}_{cap_action}.html"
             )
             with open(template_file_path, "w") as template_file:
                 template_file.write(str(t))
@@ -72,9 +72,14 @@ class DjangoModel():
                 
     def generate_class_based_views(self):
         views = self.actions
+        urls_imports = []
+        urls_paths = []
+        # Create model views directory
         Path(self.model_views_path).mkdir(parents=True, exist_ok=True)
+        # loop through the actions
         for view_name in views:
             cap_view_name = view_name.capitalize()
+            
             t = Template(
                 file=templates.getTemplatePath(
                     directory="views",
@@ -82,6 +87,7 @@ class DjangoModel():
                 )
             )
             t.model = self
+            
             view_file_path = os.path.join(
                 self.model_views_path, f"{self.name}{cap_view_name}View.py"
             )
@@ -96,6 +102,30 @@ class DjangoModel():
             with open(self.app_views_init_file_path, "a") as app_views_init_file:
                 app_views_init_file.write(f"from .{self.name} import {self.name}{cap_view_name}View\n")
                 app_views_init_file.close()
+            
+            # add path url_paths list
+            if view_name in ("create", "delete"):
+                urls_paths.append((
+                    f"{self.name}/<int:pk>/{view_name}",
+                    f"{self.name}{cap_view_name}View",
+                    f"{self.name}-{view_name}"
+                ))
+            elif view_name == "detail":
+                urls_paths.append((f"{self.name}/<int:pk>", f"{self.name}{cap_view_name}View", f"{self.name}-{view_name}"))
+            else:
+                urls_paths.append((f"{self.name}/{view_name}", f"{self.name}{cap_view_name}View", f"{self.name}-{view_name}"))
+            
+        app_urls_template = Template(
+            file=templates.getTemplatePath(
+                filename="urls.tmpl"
+            )
+        )
+        app_urls_template.model = self
+        app_urls_template.urls_paths = urls_paths
+        with open(self.app_urls_file_path, "w") as app_urls_file:
+            app_urls_file.write(str(app_urls_template))
+            app_urls_file.close()
+            
 
     @classmethod
     def getFromDocument(cls, document: minidom.Document) -> list:
@@ -132,6 +162,7 @@ class DjangoModel():
         model = self
         t = Template(file=templates.MODEL_TEMPLATE_PATH)
         t.model = self
+        t.config = config
         Path(self.app_models_path).mkdir(parents=True, exist_ok=True)
         model_file_path = os.path.join(self.app_models_path, f"{model.name}.py")
         # write model file
@@ -210,6 +241,11 @@ class DjangoModel():
         # example: some_django_app/views/some_model/__init__.py
         self.model_views_init_file_path = os.path.join(
             self.model_views_path, "__init__.py"
+        )
+        # App urls.py path
+        self.app_urls_file_path = os.path.join(
+            self.app_path,
+            "urls.py",
         )
         # App Templates paths
         # example: some_django_app/templates/

@@ -1,5 +1,3 @@
-# Generate by uml2django 
-
 import os
 from uml2django import templates
 

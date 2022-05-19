@@ -1,0 +1,11 @@
+from django.test import TestCase
+from django.urls import reverse
+
+class ${model_name}${crud_item_capitalize}TestCase(TestCase):
+    def setUp(self):
+        pass
+
+    def test_${model.name_lower}_create_page(self):
+        response = self.client.get(reverse('${model.name_lower}-create'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, '${model.name_lower}_create.html')

@@ -1,5 +1,11 @@
 import sys
 from xml.dom import minidom
+from uml2django.config import (
+    CHAR_FIELD_MAX_LENGTH,
+    DECIMAL_FIELD_DECIMAL_PLACES,
+    DECIMAL_FIELD_SHORTCUT,
+    DECIMAL_FIELD_MAX_DIGITS
+)
 from uml2django.logger import _logger
 
 
@@ -44,11 +50,18 @@ class DjangoModelField():
         self.name = name
 
         if len(name_and_field) == 1:
-            self.field_type = "CharField"
+            self.field_type = f"CharField(max_length={CHAR_FIELD_MAX_LENGTH})"
         else:
             field = name_and_field[1]
             field = field.split(" ")
             field = "".join(list(filter(None, field)))
             self.field_type = field
+            if self.field_type == "DecimalField":
+                self.field_type = f"DecimalField(decimal_places={DECIMAL_FIELD_DECIMAL_PLACES},max_digits={DECIMAL_FIELD_MAX_DIGITS})"
+            elif self.field_type == "CharField":
+                self.field_type = f"CharField(max_length={CHAR_FIELD_MAX_LENGTH})"
+            else:
+                self.field_type = f"{self.field_type}()"
+            
 
 

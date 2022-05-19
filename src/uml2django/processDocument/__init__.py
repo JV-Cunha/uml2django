@@ -2,13 +2,18 @@ import os
 
 import sys
 import subprocess
-from typing import List
 from xml.dom import minidom
 
 
-from uml2django.logger import _logger
-from uml2django.XmiArgoUmlTagsName import XMI_ARGO_ATTRIBUTE_TAG_NAME, XMI_ARGO_CLASS_TAG_NAME
-from uml2django import templates
+def prepend_to_file(file_path, content):
+    """ Add content to begin of the file  """
+    file = open(file_path, 'r+', encoding='utf-8')
+    lines = file.readlines()
+    file.seek(0)
+    file.write(content)
+    for line in lines:  # write old content after new
+        file.write(line)
+    file.close
 
 
 def readXmiFile(filename: str) -> minidom.Document:
@@ -19,7 +24,7 @@ def readXmiFile(filename: str) -> minidom.Document:
 
     Returns:
         minidom.Document: Returns the document object model
-    """    
+    """
     document_object_model = None
     # Try to read from given filename, exits if file not found
     try:
