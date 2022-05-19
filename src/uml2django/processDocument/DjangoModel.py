@@ -21,6 +21,9 @@ class DjangoModel():
     name = str()
     fields = list()
     views_path = str()
+    urls_imports = []
+    urls_paths = []
+
     actions = [
         'create', 'delete', 'detail',
         'list', 'update',
@@ -28,11 +31,46 @@ class DjangoModel():
 
     @classmethod
     def generateCodeFromDocument(cls, document: minidom.Document) -> list:
+        # This dictonary is used to generate the urls.py of each app defined
+        # It contais the app name as key and the urls_paths as value
+        apps_and_urls_paths = {
+            # app_name: urls_paths
+        }
+
         for model in cls.getFromDocument(document):
             model.generate_model_python_file()
             model.generate_model_form()
             model.generate_class_based_views()
             model.generate_templates()
+
+            # if app_name is not in the dict
+            if model.app_name not in apps_and_urls_paths:
+                apps_and_urls_paths[model.app_name] = model.urls_paths
+            # if the app name already in the dict
+            # append the urls paths to the existing ones
+            else:
+                apps_and_urls_paths[model.app_name] += model.urls_paths
+        
+        # generate the urls.py file for each app defined
+        for app_name in apps_and_urls_paths:
+            urls_paths = apps_and_urls_paths[app_name]
+            
+            app_urls_template = Template(
+                file=templates.getTemplatePath(
+                    filename="urls.tmpl"
+                )
+            )
+            app_urls_template.urls_paths = urls_paths
+            app_urls_template.app_name = app_name
+            # App urls.py path
+            app_urls_file_path = os.path.join(
+                app_name,
+                "urls.py",
+            )
+            with open(app_urls_file_path, "w") as app_urls_file:
+                app_urls_file.write(str(app_urls_template))
+                app_urls_file.close()
+
         return None
 
     def generate_model_form(self):
@@ -72,8 +110,6 @@ class DjangoModel():
                 
     def generate_class_based_views(self):
         views = self.actions
-        urls_imports = []
-        urls_paths = []
         # Create model views directory
         Path(self.model_views_path).mkdir(parents=True, exist_ok=True)
         # loop through the actions
@@ -105,26 +141,17 @@ class DjangoModel():
             
             # add path url_paths list
             if view_name in ("create", "delete"):
-                urls_paths.append((
+                self.urls_paths.append((
                     f"{self.name}/<int:pk>/{view_name}",
                     f"{self.name}{cap_view_name}View",
                     f"{self.name}-{view_name}"
                 ))
             elif view_name == "detail":
-                urls_paths.append((f"{self.name}/<int:pk>", f"{self.name}{cap_view_name}View", f"{self.name}-{view_name}"))
+                self.urls_paths.append((f"{self.name}/<int:pk>", f"{self.name}{cap_view_name}View", f"{self.name}-{view_name}"))
             else:
-                urls_paths.append((f"{self.name}/{view_name}", f"{self.name}{cap_view_name}View", f"{self.name}-{view_name}"))
+                self.urls_paths.append((f"{self.name}/{view_name}", f"{self.name}{cap_view_name}View", f"{self.name}-{view_name}"))
             
-        app_urls_template = Template(
-            file=templates.getTemplatePath(
-                filename="urls.tmpl"
-            )
-        )
-        app_urls_template.model = self
-        app_urls_template.urls_paths = urls_paths
-        with open(self.app_urls_file_path, "w") as app_urls_file:
-            app_urls_file.write(str(app_urls_template))
-            app_urls_file.close()
+        
             
 
     @classmethod
@@ -241,11 +268,6 @@ class DjangoModel():
         # example: some_django_app/views/some_model/__init__.py
         self.model_views_init_file_path = os.path.join(
             self.model_views_path, "__init__.py"
-        )
-        # App urls.py path
-        self.app_urls_file_path = os.path.join(
-            self.app_path,
-            "urls.py",
         )
         # App Templates paths
         # example: some_django_app/templates/
