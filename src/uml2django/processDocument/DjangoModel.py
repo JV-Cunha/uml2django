@@ -90,9 +90,8 @@ class DjangoModel():
                 text_file.close()
 
     def generate_templates(self):
-        Path(self.app_templates_path).mkdir(parents=True, exist_ok=True)
+        Path(self.model_templates_path).mkdir(parents=True, exist_ok=True)
         for action in self.actions:
-            cap_action = action.capitalize()
             t = Template(
                 file=templates.getTemplatePath(
                     directory="templates",
@@ -101,21 +100,18 @@ class DjangoModel():
             )
             t.model = self
             template_file_path = os.path.join(
-                self.app_templates_path, f"{self.name_lower}_{cap_action}.html"
+                self.model_templates_path, f"{self.name_lower}_{action}.html"
             )
             with open(template_file_path, "w") as template_file:
                 template_file.write(str(t))
                 template_file.close()
-                
-                
+
     def generate_class_based_views(self):
-        views = self.actions
         # Create model views directory
         Path(self.model_views_path).mkdir(parents=True, exist_ok=True)
         # loop through the actions
-        for view_name in views:
+        for view_name in self.actions:
             cap_view_name = view_name.capitalize()
-            
             t = Template(
                 file=templates.getTemplatePath(
                     directory="views",
@@ -123,7 +119,7 @@ class DjangoModel():
                 )
             )
             t.model = self
-            
+
             view_file_path = os.path.join(
                 self.model_views_path, f"{self.name}{cap_view_name}View.py"
             )
@@ -132,24 +128,36 @@ class DjangoModel():
                 view_file.close()
             # add import to __init__.py inside model views path
             with open(self.model_views_init_file_path, "a") as model_views_init_file:
-                model_views_init_file.write(f"from .{self.name}{cap_view_name}View import {self.name}{cap_view_name}View\n")
+                model_views_init_file.write(
+                    f"from .{self.name}{cap_view_name}View import {self.name}{cap_view_name}View\n"
+                )
                 model_views_init_file.close()
             # add import to __init__.py inside app views path
             with open(self.app_views_init_file_path, "a") as app_views_init_file:
-                app_views_init_file.write(f"from .{self.name} import {self.name}{cap_view_name}View\n")
+                app_views_init_file.write(
+                    f"from .{self.name} import {self.name}{cap_view_name}View\n"
+                )
                 app_views_init_file.close()
             
             # add path url_paths list
-            if view_name in ("create", "delete"):
+            if view_name in ("update", "delete"):
                 self.urls_paths.append((
                     f"{self.name}/<int:pk>/{view_name}",
                     f"{self.name}{cap_view_name}View",
-                    f"{self.name}-{view_name}"
+                    f"{self.name_lower}-{view_name}"
                 ))
             elif view_name == "detail":
-                self.urls_paths.append((f"{self.name}/<int:pk>", f"{self.name}{cap_view_name}View", f"{self.name}-{view_name}"))
+                self.urls_paths.append((
+                    f"{self.name}/<int:pk>",
+                    f"{self.name}{cap_view_name}View",
+                    f"{self.name_lower}-{view_name}"
+                ))
             else:
-                self.urls_paths.append((f"{self.name}/{view_name}", f"{self.name}{cap_view_name}View", f"{self.name}-{view_name}"))
+                self.urls_paths.append((
+                    f"{self.name}/{view_name}",
+                    f"{self.name}{cap_view_name}View",
+                    f"{self.name_lower}-{view_name}"
+                ))
             
         
             
@@ -277,5 +285,5 @@ class DjangoModel():
         )
         self.model_templates_path = os.path.join(
             self.app_templates_path,
-            self.name,
+            self.app_name,
         )
