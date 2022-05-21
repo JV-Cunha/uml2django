@@ -6,4 +6,5 @@ from ${model.app_name}.models import ${model.name}
 class ${model.name}UpdateView(UpdateView):
     model = ${model.name}
     fields = '__all__'
-    success_url = reverse_lazy('${model.name}_list')
+    template_name = "${model.app_name}/${model.name_lower}_update.html"
+    success_url = reverse_lazy('${model.name_lower}-list')

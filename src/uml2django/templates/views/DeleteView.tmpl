@@ -5,4 +5,5 @@ from ${model.app_name}.models import ${model.name}
 
 class ${model.name}DeleteView(DeleteView):
     model = ${model.name}
-    success_url = reverse_lazy('${model.name_lower}_list')
+    template_name = "${model.app_name}/${model.name_lower}_delete.html"
+    success_url = reverse_lazy('${model.name_lower}-list')

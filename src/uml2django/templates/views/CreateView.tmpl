@@ -11,5 +11,5 @@ class ${model.name}CreateView(CreateView):
         '$field.name', 
         #end for
         )
-    #template_name = "${model.name}/${model.name}_create.html"
-    success_url = reverse_lazy('${model.name}-list')
+    template_name = "${model.app_name}/${model.name_lower}_create.html"
+    success_url = reverse_lazy('${model.name_lower}-list')
