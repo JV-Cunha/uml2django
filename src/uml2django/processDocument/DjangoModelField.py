@@ -2,9 +2,6 @@ import sys
 from xml.dom import minidom
 from uml2django.config import (
     CHAR_FIELD_MAX_LENGTH,
-    DECIMAL_FIELD_DECIMAL_PLACES,
-    DECIMAL_FIELD_SHORTCUT,
-    DECIMAL_FIELD_MAX_DIGITS
 )
 from uml2django.logger import _logger
 
@@ -12,6 +9,7 @@ from uml2django.logger import _logger
 class DjangoModelField():
     name = None
     field_type = None
+    field_options = None
     visibility = None
     
     def __init__(self, element: minidom.Element = None):
@@ -49,19 +47,24 @@ class DjangoModelField():
         name = "_".join(list(filter(None, name)))
         self.name = name
 
+        # If no field type was informed
         if len(name_and_field) == 1:
-            self.field_type = f"CharField(max_length={CHAR_FIELD_MAX_LENGTH})"
+            self.field_type = "CharField"
+            self.field_options = [f"max_length={CHAR_FIELD_MAX_LENGTH}"]
         else:
             field = name_and_field[1]
             field = field.split(" ")
             field = "".join(list(filter(None, field)))
-            self.field_type = field
-            if self.field_type == "DecimalField":
-                self.field_type = f"DecimalField(decimal_places={DECIMAL_FIELD_DECIMAL_PLACES},max_digits={DECIMAL_FIELD_MAX_DIGITS})"
-            elif self.field_type == "CharField":
-                self.field_type = f"CharField(max_length={CHAR_FIELD_MAX_LENGTH})"
-            else:
-                self.field_type = f"{self.field_type}()"
+            self.field_type = field[:field.find("(")]
+            self.field_options = field[field.find("(")+1:field.find(")")].split(",")
+            self.field_options = list(filter(None, self.field_options))
+        
+        has_verbose_name = False
+        for field_option in self.field_options:
+            has_verbose_name = True if field_option.startswith("verbose_name") else False
+        if not has_verbose_name:
+            verbose_name = " ".join(self.name.split("_"))
+            self.field_options.append(f"verbose_name=_('{verbose_name}')")
             
-
-
+            # s = field
+            # field_options = s[s.find("(")+1:s.find(")")]
