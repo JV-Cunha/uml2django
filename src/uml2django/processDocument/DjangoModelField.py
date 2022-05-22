@@ -60,11 +60,16 @@ class DjangoModelField():
             self.field_options = list(filter(None, self.field_options))
         
         has_verbose_name = False
+        has_help_text = False
+        
         for field_option in self.field_options:
             has_verbose_name = True if field_option.startswith("verbose_name") else False
+            has_help_text = True if field_option.startswith("help_text") else False
         if not has_verbose_name:
             verbose_name = " ".join(self.name.split("_"))
             self.field_options.append(f"verbose_name=_('{verbose_name}')")
+        if not has_help_text:
+            self.field_options.append(f"help_text=_('{verbose_name} help text')")
             
             # s = field
             # field_options = s[s.find("(")+1:s.find(")")]
