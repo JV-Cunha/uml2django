@@ -1,7 +1,9 @@
+
 import sys
 from xml.dom import minidom
 from uml2django.config import (
     CHAR_FIELD_MAX_LENGTH,
+    GENERATE_FIELDS_HELP_TEXT
 )
 from uml2django.logger import _logger
 
@@ -68,7 +70,7 @@ class DjangoModelField():
         if not has_verbose_name:
             verbose_name = " ".join(self.name.split("_"))
             self.field_options.append(f"verbose_name=_('{verbose_name}')")
-        if not has_help_text:
+        if not has_help_text and GENERATE_FIELDS_HELP_TEXT:
             self.field_options.append(f"help_text=_('{verbose_name} help text')")
             
             # s = field

@@ -1,0 +1,14 @@
+from django import forms
+ 
+from ${model.app_name}.models import ${model.name}
+ 
+
+class ${model.name}CreateForm(forms.ModelForm):
+    # specify the name of model to use
+    class Meta:
+        model = ${model.name}
+        fields = (
+            #for $field in $model.fields
+            '${field.name}',
+            #end for
+        )

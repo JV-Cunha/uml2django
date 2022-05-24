@@ -10,7 +10,7 @@ class ${model.name}(models.Model):
     #for $field in $model.fields
     ${field.name} = models.${field.field_type}(
         #for $field_option in $field.field_options
-        $field_option, 
+        $field_option,
         #end for
     )
     #end for

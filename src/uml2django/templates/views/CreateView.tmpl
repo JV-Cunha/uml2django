@@ -3,13 +3,15 @@ from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
 
 from ${model.app_name}.models import ${model.name}
+from ${model.app_name}.forms import ${model.name}CreateForm
 
 class ${model.name}CreateView(CreateView):
     model = ${model.name}
-    fields = (
-        #for $field in $model.fields 
-        '$field.name', 
-        #end for
-        )
+    form_class = ${model.name}CreateForm
+    ##fields = (
+    ##    #for $field in $model.fields 
+    ##    '$field.name', 
+    ##    #end for
+    ##    )
     template_name = "${model.app_name}/${model.name_lower}_create.html"
     success_url = reverse_lazy('${model.name_lower}-list')

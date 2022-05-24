@@ -1,3 +1,4 @@
+GENERATE_FIELDS_HELP_TEXT = True
 
 OUTPUT_PATH = "uml2django_output"
 
