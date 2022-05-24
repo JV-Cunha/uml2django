@@ -1,16 +1,19 @@
+#Core Django imports
 from django.test import TestCase
-from ${model.app_name}.models import ${model.name}
-from ${model.app_name}.forms import (
-    ${model.name}CreateForm,
-    ${model.name}UpdateForm
-)
-from django.utils import timezone
 from django.urls import reverse
+
+#Third-party app imports
+from model_bakery import baker
+
+from ${model.app_name}.models import ${model.name}
 
 
 class ${model.name}ViewsTest(TestCase):
-#for $action in $actions:
 
+    def setUp(self):
+        self.${model.name_lower} = baker.make(${model.name})
+
+#for $action in $actions:
     def test_${model.name_lower}_${action}_view_status_code(self):
         #if $action == "create" or $action == "list"
         url = reverse("${model.name_lower}-${action}")
