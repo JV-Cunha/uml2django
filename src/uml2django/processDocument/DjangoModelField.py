@@ -64,14 +64,20 @@ class DjangoModelField():
         has_verbose_name = False
         has_help_text = False
         
+        char_field_has_max_length = False
         for field_option in self.field_options:
             has_verbose_name = True if field_option.startswith("verbose_name") else False
             has_help_text = True if field_option.startswith("help_text") else False
+            if self.field_type == "CharField":
+                char_field_has_max_length = True if field_option.startswith("max_length") else False
+                
         if not has_verbose_name:
             verbose_name = " ".join(self.name.split("_"))
             self.field_options.append(f"verbose_name=_('{verbose_name}')")
         if not has_help_text and GENERATE_FIELDS_HELP_TEXT:
             self.field_options.append(f"help_text=_('{verbose_name} help text')")
-            
+
+        if not char_field_has_max_length and self.field_type == "CharField":
+            self.field_options.append(f"max_length={CHAR_FIELD_MAX_LENGTH}")
             # s = field
             # field_options = s[s.find("(")+1:s.find(")")]
