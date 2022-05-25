@@ -93,13 +93,15 @@ class DjangoModel():
                 text_file.write(str(model_form_template))
                 text_file.close()
             # add import to model forms __init__.py file
-            with open(self.model_forms_init_path, "a") as text_file:
-                text_file.write(f"from .{form_class_name} import {form_class_name}\n")
-                text_file.close()
+            self.add_import_to_init_file(
+                self.model_forms_init_path,
+                f"from .{form_class_name} import {form_class_name}\n"
+            )
             # add import to app forms __init__.py file
-            with open(self.app_forms_init_path, "a") as text_file:
-                text_file.write(f"from .{self.name_lower} import {form_class_name}\n")
-                text_file.close()
+            self.add_import_to_init_file(
+                self.app_forms_init_path,
+                f"from .{self.name_lower} import {form_class_name}\n"
+            )
 
     def generate_templates(self):
         Path(self.model_templates_path).mkdir(parents=True, exist_ok=True)
@@ -141,18 +143,15 @@ class DjangoModel():
                 view_file.close()
 
             # add import to __init__.py inside model views path
-            with open(self.model_views_init_file_path, "a") as model_views_init_file:
-                model_views_init_file.write(
-                    f"from .{self.name}{cap_view_name}View import {self.name}{cap_view_name}View\n"
-                )
-                model_views_init_file.close()
-
+            self.add_import_to_init_file(
+                self.model_views_init_file_path,
+                f"from .{self.name}{cap_view_name}View import {self.name}{cap_view_name}View\n"
+            )
             # add import to __init__.py inside app views path
-            with open(self.app_views_init_file_path, "a") as app_views_init_file:
-                app_views_init_file.write(
-                    f"from .{self.name_lower} import {self.name}{cap_view_name}View\n"
-                )
-                app_views_init_file.close()
+            self.add_import_to_init_file(
+                self.app_views_init_file_path,
+                f"from .{self.name_lower} import {self.name}{cap_view_name}View\n"
+            )
 
             # append view path self urls_paths list
             if view_name in ("update", "delete"):
@@ -191,18 +190,16 @@ class DjangoModel():
         with open(model_views_test_file_path, "w") as test_file:
             test_file.write(str(model_views_test_template))
             test_file.close()
-        # add import to model tests __init__.py 
-        with open(self.model_tests_init_file_path, "a") as app_tests_init_file:
-            app_tests_init_file.write(
-                f"from .{self.name}ViewsTest import {self.name}ViewsTest\n"
-            )
-            app_tests_init_file.close()    
-        # add import to app tests __init__.py 
-        with open(self.app_tests_init_file_path, "a") as app_tests_init_file:
-            app_tests_init_file.write(
-                f"from .{self.name_lower} import {self.name}ViewsTest\n"
-            )
-            app_tests_init_file.close()
+        # add import to model tests __init__.py
+        self.add_import_to_init_file(
+            self.model_tests_init_file_path,
+            f"from .{self.name}ViewsTest import {self.name}ViewsTest\n"
+        )
+        # add import to app tests __init__.py
+        self.add_import_to_init_file(
+            self.app_tests_init_file_path,
+            f"from .{self.name_lower} import {self.name}ViewsTest\n"
+        )
 
     @classmethod
     def getFromDocument(cls, document: minidom.Document) -> list:
@@ -237,19 +234,43 @@ class DjangoModel():
 
     def generate_model_python_file(self):
         model = self
-        t = Template(file=templates.MODEL_TEMPLATE_PATH)
-        t.model = self
-        t.config = config
+        django_model_template = Template(file=templates.MODEL_TEMPLATE_PATH)
+        django_model_template.model = self
+        django_model_template.config = config
         Path(self.app_models_path).mkdir(parents=True, exist_ok=True)
         model_file_path = os.path.join(self.app_models_path, f"{model.name}.py")
         # write model file
         with open(model_file_path, "w") as text_file:
-            text_file.write(str(t))
+            text_file.write(str(django_model_template))
             text_file.close()
         # add import to __init__.py
-        with open(self.app_models_init_path, "a") as text_file:
-            text_file.write(f"from .{self.name} import {self.name}\n")
-            text_file.close()
+        self.add_import_to_init_file(
+            self.app_models_init_path,
+            f"from .{self.name} import {self.name}\n"
+        )
+
+    def add_import_to_init_file(
+        self, init_file_path: str, import_statement: str
+    ) -> None:
+        """Checks if init file already has the import statement
+        and add it if not.
+
+        Args:
+            init_file_path (str): The __init__.py file path
+            import_statement (str): The import statement to add after check if exists
+        """
+
+        already_has_import_statement = False
+        if os.path.exists(init_file_path):
+            with open(init_file_path, "r") as init_file:
+                if import_statement in init_file.read():
+                    already_has_import_statement = True
+                init_file.close()
+
+        if not already_has_import_statement:
+            with open(init_file_path, "a") as init_file:
+                init_file.write(import_statement)
+                init_file.close()
 
     def setNamesFromElement(self):
         self.name = self.element.attributes.get("name").value.lower().capitalize()
