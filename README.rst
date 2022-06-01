@@ -29,18 +29,30 @@
 ==========
 uml2django
 ==========
-Generate Django code from UML class diagrams
+Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class diagrams <https://plantuml.com/class-diagram>`_
+
+**Syntax**
+==========
+
+**Apps**
+--------
+To represent an Django App, the ``::``
+
+**Model**
+---------
 
 **Fields**
-**********
+----------
 
 **Model Relationships**
-***********************
+-----------------------
+* Inheritance
 * Many-to-many
-
-
 * Many-to-one
-
 * One-to-one
 
 
+**Documentation**
+=================
+https://docs.typo3.org/m/typo3/docs-how-to-document/main/en-us/WritingReST/CheatSheet.html
+https://rest-sphinx-memo.readthedocs.io/en/latest/ReST.html
