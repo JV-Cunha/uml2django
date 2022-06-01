@@ -36,7 +36,16 @@ Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class di
 
 **Apps**
 --------
-To represent an Django App, the ``::``
+To represent an Django App, the PlantUML ``package`` tag::
+
+    A normal paragraph ending with ``::`` will flow and be word-wrapped::
+
+        If the next paragraph is indented by four or more spaces, it will be monospaced text, without flow (or even wrapping in some non-print cases.)
+
+        You can have multiple paragraphs like this, as long as they
+        are all indented by the same amount.
+
+
 
 **Model**
 ---------
