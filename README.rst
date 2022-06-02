@@ -36,6 +36,7 @@ Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class di
 
 **Apps**
 --------
+
 * To represent an Django App, use the PlantUML ``package`` tag.
 * The app name must follow `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`_:  
 
