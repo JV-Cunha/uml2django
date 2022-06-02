@@ -36,19 +36,25 @@ Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class di
 
 **Apps**
 --------
-To represent an Django App, the PlantUML ``package`` tag::
+To represent an Django App, the PlantUML ``package`` tag.
+The package name must follow `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`:  
+Modules and packages should have short, all-lowercase names. 
+Underscores can be used in the module name if it improves readability,
+although the use of underscores is discouraged.::
 
-    A normal paragraph ending with ``::`` will flow and be word-wrapped::
+    @startuml
+        package "exampledjangoapp" {
+            
+        }
+        package "example_django_app" {
+            
+        }
+    @enduml
 
-        If the next paragraph is indented by four or more spaces, it will be monospaced text, without flow (or even wrapping in some non-print cases.)
 
-        You can have multiple paragraphs like this, as long as they
-        are all indented by the same amount.
+**Models**
+----------
 
-
-
-**Model**
----------
 
 **Fields**
 ----------
