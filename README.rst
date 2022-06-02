@@ -3,7 +3,8 @@ uml2django
 ==========
 Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class diagrams <https://plantuml.com/class-diagram>`_.
 
-uml2django is able to generate:
+uml2django is able to generate: 
+
 * Models
 * Forms 
 * Class Based Views
