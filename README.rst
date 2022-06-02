@@ -29,7 +29,15 @@
 ==========
 uml2django
 ==========
-Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class diagrams <https://plantuml.com/class-diagram>`_
+Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class diagrams <https://plantuml.com/class-diagram>`_.
+
+uml2django is able to generate:
+* Models
+* Forms 
+* Class Based Views
+* Templates
+* Rest Api's  
+
 
 **Syntax**
 ==========
@@ -38,7 +46,7 @@ Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class di
 --------
 
 * To represent an Django App, use the PlantUML ``package`` tag.
-* **The app name must follow** `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`_:
+* The app name must follow `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`_:
   *Modules and packages should have short, all-lowercase names.*
   *Underscores can be used if it improves readability,*
   *although the use of underscores is discouraged.*
@@ -59,9 +67,9 @@ Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class di
 ----------
 
 * Use PlantUML ``class`` tag to represent an Django Model.
-* **The Model name must follow** `pep8 <https://peps.python.org/pep-0008/#class-names>`_ :  
+* The Model name must follow `pep8 <https://peps.python.org/pep-0008/#class-names>`_ :  
   *where stands that class names should normally use the CapWords convention.*
-* All models defined MUST BE inside an django_app represented by an plant uml ``package``:: 
+* All classes defined MUST BE inside an package, like models inside Django apps.::
     
     @startuml
         package exampledjangoapp {
@@ -81,7 +89,24 @@ Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class di
 **Model Fields**
 ----------------
 
-* 
+* Use PlantUML ``{field}`` tag to represent an Django model field.
+* If the field type is not informed, uml2django define as CharField.
+::
+
+    @startuml
+        package exampledjangoapp {
+            class MyFirstModel {
+                {field} char_field : CharField(max_length=30)
+            }
+        }
+        package example_django_app {
+            class MySecondModel {
+
+            }
+        }
+    @enduml
+
+
 
 **Model Relationships**
 -----------------------
