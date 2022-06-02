@@ -37,7 +37,11 @@ Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class di
 **Apps**
 --------
 To represent an Django App, the PlantUML ``package`` tag.
+<<<<<<< HEAD
 The app name must follow `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`_:  
+=======
+The package name must follow `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`:  
+>>>>>>> 57f03f95c4aeaa4e87043017a89340ff636ea332
 Modules and packages should have short, all-lowercase names. 
 Underscores can be used in the module name if it improves readability,
 although the use of underscores is discouraged.::
@@ -46,7 +50,11 @@ although the use of underscores is discouraged.::
         package "exampledjangoapp" {
             
         }
+<<<<<<< HEAD
         package example_django_app {
+=======
+        package "example_django_app" {
+>>>>>>> 57f03f95c4aeaa4e87043017a89340ff636ea332
             
         }
     @enduml

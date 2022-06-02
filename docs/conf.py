@@ -33,17 +33,17 @@ try:  # for Sphinx >= 1.7
 except ImportError:
     from sphinx import apidoc
 
-output_dir = os.path.join(__location__, "sphinxAutoDoc")
+OUTPUT_PATH = os.path.join(__location__, "sphinxAutoDoc")
 module_dir = os.path.join(__location__, "../src/uml2django")
 try:
-    shutil.rmtree(output_dir)
+    shutil.rmtree(OUTPUT_PATH)
 except FileNotFoundError:
     pass
 
 try:
     import sphinx
 
-    cmd_line = f"sphinx-apidoc --implicit-namespaces -f -o {output_dir} {module_dir}"
+    cmd_line = f"sphinx-apidoc --implicit-namespaces -f -o {OUTPUT_PATH} {module_dir}"
 
     args = cmd_line.split(" ")
     if tuple(sphinx.__version__.split(".")) >= ("1", "7"):

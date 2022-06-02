@@ -1,0 +1,51 @@
+@startuml
+
+
+
+
+class Users{
+    +id: int
+    +name: string
+    -e_mail: string
+    RmvUsers(user_id)
+}
+class Profile{
+    +user_id: int
+    +username: string
+    +ChangeProfilePic(path: string)
+    +ChangeBackGround(path: string)
+
+}
+class message{
+    +user_id: int
+    +message_id: int
+    +message_content: string
+    +recipient_id: int
+    +SendMessage(user_id,message,recipient_id)
+    +deleteMessage()
+
+}
+
+
+class Follower{
+    +user_id: int
+    +following: int[]
+    +followers: int[]
+    +listFollower()
+    +listFollowing()
+}
+
+class Twits{
+    +twit: string[]
+    +id:int
+    +AddTwit(text: string, id: int)
+    +RemoveTwit()
+    +EditTwit(text: string, id: int)
+    +ShowAllTwit()
+}
+Users "1" *-- "1" Profile
+Profile "1" *-- "0..n" message
+Profile "1" *-- "0..n" Follower
+Profile "1" *-- "0..n" Twits
+
+@enduml

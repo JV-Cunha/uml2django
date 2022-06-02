@@ -35,7 +35,8 @@ class DjangoModel():
         # This dictonary is used to generate the urls.py of each app defined
         # It contais the app name as key and the urls_paths as value
         apps_and_urls_paths = {
-            # app_name: urls_paths
+            # app_name: urls_paths,
+            # app_name_2: urls_paths_2,
         }
 
         for model in cls.getFromDocument(document):
