@@ -1,2 +1,4 @@
+# MANIFEST.in
+
 global-exclude *.py[cod]
 exclude tests
