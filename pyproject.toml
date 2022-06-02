@@ -1,12 +1,7 @@
 [build-system]
 # AVOID CHANGING REQUIRES: IT WILL BE UPDATED BY PYSCAFFOLD!
-requires = ["setuptools>=46.1.0", "setuptools_scm[toml]>=5", "wheel", "cheetah3",]
+requires = ["setuptools>=46.1.0", "wheel",]
 build-backend = "setuptools.build_meta"
-
-[tool.setuptools_scm]
-# For smarter version schemes and other configuration options,
-# check out https://github.com/pypa/setuptools_scm
-version_scheme = "no-guess-dev"
 
 [project]
 name = "uml2django"
@@ -15,16 +10,33 @@ description = "Generate Django code from PlantUML class diagrams"
 readme = "README.rst"
 authors = [{ name = "Joao Cunha", email = "jvsdc1992@gmail.com" }]
 license = { file = "LICENSE.txt" }
+# Add here all kinds of additional classifiers as defined under
+# https://pypi.org/classifiers/
 classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3",
+    "Environment :: Console",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "License :: Public Domain",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Software Development :: Code Generators",
+    
 ]
 # keywords = ["feed", "reader", "tutorial"]
 dependencies = [
+    "cheetah3",
 ]
 requires-python = ">=3.8.10"
 
 [project.urls]
 Homepage = "https://github.com/j-hanks/uml2django"
 
-# [project.scripts]
-# realpython = "uml2django.__main__:main"
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["uml2django.tests"]
+
+[project.scripts] 
+uml2django = "uml2django.main:run"
+
+
