@@ -57,10 +57,11 @@ Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class di
 
 **Models**
 ----------
-Use PlantUML ``class`` tag to represent an Django Model.
-The Model name must follow `pep8 <https://peps.python.org/pep-0008/#class-names>`_ :  
-where stands that class names should normally use the CapWords convention.
-All models defined MUST BE inside an django_app represented by an plant uml ``package``:: 
+
+* Use PlantUML ``class`` tag to represent an Django Model.
+* **The Model name must follow** `pep8 <https://peps.python.org/pep-0008/#class-names>`_ :  
+  *where stands that class names should normally use the CapWords convention.*
+* All models defined MUST BE inside an django_app represented by an plant uml ``package``:: 
     
     @startuml
         package exampledjangoapp {
@@ -77,8 +78,10 @@ All models defined MUST BE inside an django_app represented by an plant uml ``pa
 
 
 
-**Fields**
-----------
+**Model Fields**
+----------------
+
+* 
 
 **Model Relationships**
 -----------------------
