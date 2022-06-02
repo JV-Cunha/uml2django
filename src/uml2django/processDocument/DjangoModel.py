@@ -70,6 +70,7 @@ class DjangoModel():
                 app_name,
                 "urls.py",
             )
+            
             with open(app_urls_file_path, "w") as app_urls_file:
                 app_urls_file.write(str(app_urls_template))
                 app_urls_file.close()
