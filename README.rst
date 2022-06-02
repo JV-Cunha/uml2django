@@ -39,10 +39,11 @@ Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class di
 
 * To represent an Django App, use the PlantUML ``package`` tag.
 * The app name must follow `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`_:  
-
-> Modules and packages should have short, all-lowercase names. 
-Underscores can be used in the module name if it improves readability,
-although the use of underscores is discouraged.::
+    * Modules and packages should have short, all-lowercase names. 
+      Underscores can be used in the module name if it improves readability,
+      although the use of underscores is discouraged.
+        
+::
 
     @startuml
         package exampledjangoapp {
