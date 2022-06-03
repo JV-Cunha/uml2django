@@ -18,12 +18,10 @@ uml2django is able to generate:
 --------
 
 * To represent an Django App, use the PlantUML ``package`` tag.
-* The app name must follow `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`_:
+* The app name must follow `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`__:
   *Modules and packages should have short, all-lowercase names.*
   *Underscores can be used if it improves readability,*
-  *although the use of underscores is discouraged.*
-        
-::
+  *although the use of underscores is discouraged.*::
 
     @startuml
         package exampledjangoapp {
@@ -39,7 +37,7 @@ uml2django is able to generate:
 ----------
 
 * Use PlantUML ``class`` tag to represent an Django Model.
-* The Model name must follow `pep8 <https://peps.python.org/pep-0008/#class-names>`_ :  
+* The Model name must follow `pep8 <https://peps.python.org/pep-0008/#class-names>`__ :  
   *where stands that class names should normally use the CapWords convention.*
 * All classes defined MUST BE inside an package, like models inside Django apps.::
     
@@ -62,9 +60,7 @@ uml2django is able to generate:
 ----------------
 
 * Use PlantUML ``{field}`` tag to represent an Django model field.
-* If the field type is not informed, uml2django define it as CharField.
-
-::
+* If the field type is not informed, uml2django define it as CharField.::
 
     @startuml
         package exampledjangoapp {
