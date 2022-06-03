@@ -5,10 +5,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "uml2django"
-version = "0.0.1"
-description = "Generate Django code from PlantUML class diagrams"
+version = "0.0.4"
+description = "Generate Django code from PlantUML class diagrams."
 readme = "README.rst"
-authors = [{ name = "Joao Cunha", email = "jvsdc1992@gmail.com" }]
+authors = [
+    { name = "Joao Cunha", email = "jvsdc1992@gmail.com" }
+]
 license = { file = "LICENSE.txt" }
 # Add here all kinds of additional classifiers as defined under
 # https://pypi.org/classifiers/
@@ -21,7 +23,6 @@ classifiers = [
     "License :: Public Domain",
     "Operating System :: POSIX :: Linux",
     "Topic :: Software Development :: Code Generators",
-    
 ]
 # keywords = ["feed", "reader", "tutorial"]
 dependencies = [
