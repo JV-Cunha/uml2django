@@ -21,7 +21,7 @@ uml2django is able to generate:
 * The app name must follow `pep8 <https://peps.python.org/pep-0008/#package-and-module-names>`__:
   *Modules and packages should have short, all-lowercase names.*
   *Underscores can be used if it improves readability,*
-  *although the use of underscores is discouraged.*::plantuml
+  *although the use of underscores is discouraged.*::
 
     @startuml
         package exampledjangoapp {
