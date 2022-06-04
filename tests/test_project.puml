@@ -1,6 +1,11 @@
 @startuml
 package testapp {
-    class ExampleTestModel << Stereotype_1 >> << Stereotype_2 >> {
+    class ExampleTestModel {
+        {field} -char_field : CharField(max_length=30)
+    }
+}
+package other_test_app {
+    class OtherModel {
         {field} -char_field : CharField(max_length=30)
     }
 }
