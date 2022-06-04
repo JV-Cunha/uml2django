@@ -8,7 +8,7 @@ from Cheetah.Template import Template
 import inflect
 
 from uml2django import templates
-from uml2django import config
+from uml2django import settings
 from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_ATTRIBUTE_TAG_NAME,
     XMI_ARGO_CLASS_TAG_NAME
@@ -69,7 +69,7 @@ class DjangoModel():
             app_urls_template.app_name = app_name
             # App urls.py path
             app_urls_file_path = os.path.join(
-                config.OUTPUT_PATH,
+                settings.OUTPUT_PATH,
                 app_name,
                 "urls.py",
             )
@@ -122,6 +122,7 @@ class DjangoModel():
                     filename=f"template_{action}.tmpl"
                 )
             )
+            t.settings = settings
             t.model = self
             template_file_path = os.path.join(
                 self.model_templates_path, f"{self.name_lower}_{action}.html"
@@ -246,7 +247,7 @@ class DjangoModel():
         model = self
         django_model_template = Template(file=templates.MODEL_TEMPLATE_PATH)
         django_model_template.model = self
-        django_model_template.config = config
+        django_model_template.settings = settings
         Path(self.app_models_path).mkdir(parents=True, exist_ok=True)
         model_file_path = os.path.join(self.app_models_path, f"{model.name}.py")
         # write model file
@@ -302,12 +303,12 @@ class DjangoModel():
     def setPaths(self):
         # App path
         self.app_path = os.path.join(
-            config.OUTPUT_PATH,
+            settings.OUTPUT_PATH,
             self.app_name,
         )
         # Models path
         self.app_models_path = os.path.join(
-            config.OUTPUT_PATH,
+            settings.OUTPUT_PATH,
             self.app_name,
             "models"
         )

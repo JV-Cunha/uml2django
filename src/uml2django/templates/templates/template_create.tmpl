@@ -1,14 +1,21 @@
-## {% extends "base.html" %}
-## {% load i18n %}
+#if $settings.UML2DJANGO_USE_BASE_TEMPLATE
+{% extends "${settings.UML2DJANGO_BASE_TEMPLATE}" %}
+#end if
+#if $settings.UML2DJANGO_USE_I18N
+{% load i18n %}
+#end if
 ## {% load static%}
-## 
-## {% load crispy_forms_tags %}
+#if $settings.UML2DJANGO_USE_DJANGO_CRISPY_FORMS
+{% load crispy_forms_tags %}
+#end if
 ## 
 ## {% block page_title %}
 ## {% trans "$model.name Register" %}
 ## {% endblock page_title %}
 ## 
-## {% block base_content %}
+#if $settings.UML2DJANGO_USE_DJANGO_CRISPY_FORMS
+{% block ${settings.UML2DJANGO_BASE_TEMPLATE_CONTENT_BLOCK_NAME} %}
+#end if
 <h2 class="form-title">Add ${model.name}</h2>
     <form class="" method="post">
         {% csrf_token %}
@@ -16,3 +23,6 @@
         <input type="submit" value="Submit" />
     </form>
 </div>
+#if $settings.UML2DJANGO_USE_DJANGO_CRISPY_FORMS
+{% endblock ${settings.UML2DJANGO_BASE_TEMPLATE_CONTENT_BLOCK_NAME} %}
+#end if

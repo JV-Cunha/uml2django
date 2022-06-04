@@ -5,7 +5,7 @@ from typing import List
 from pathlib import Path
 
 from uml2django import __version__
-from uml2django import config
+from uml2django import settings
 
 
 def is_valid_file(parser: argparse.ArgumentParser, arg: str) -> str:
@@ -54,6 +54,7 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Generate Django code from UML class diagram"
     )
+    parser.set_defaults(clean=False)
 
     parser.add_argument('--xmi',
                         dest="xmi_file", metavar="FILE",
@@ -77,6 +78,15 @@ def parse_args(args: List[str]) -> argparse.Namespace:
         "--version",
         action="version",
         version="uml2django {ver}".format(ver=__version__),
+    )
+
+    # Clean output files
+    parser.add_argument(
+        "-c",
+        "--clean",
+        dest="clean",
+        help="clean generated files",
+        action="store_true",
     )
 
     # Set verbose level to INFO
@@ -110,11 +120,14 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     # Configure Output Path
     # Create path if not exists
     if parsed_args.output_path:
-        config.OUTPUT_PATH = parsed_args.output_path
-        if not os.path.exists(config.OUTPUT_PATH):
-            Path(config.OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
+        settings.OUTPUT_PATH = parsed_args.output_path
+        if not os.path.exists(settings.OUTPUT_PATH):
+            Path(settings.OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
         else:
-            if os.path.isfile(config.OUTPUT_PATH):
+            if os.path.isfile(settings.OUTPUT_PATH):
                 parser.error('Output directory path exists and is a file ')
+    
+    # if parse_args.clean:
+                
 
     return parsed_args
