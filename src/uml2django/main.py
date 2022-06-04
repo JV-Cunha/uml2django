@@ -9,8 +9,8 @@ References:
 import sys
 from typing import List
 from uml2django.processDocument import (
-    readXmiFile,
-    generateXmiFromPuml,
+    read_xmi_file,
+    generate_xmi_from_puml,
 )
 from uml2django.logger import setup_logging
 from uml2django.argparser import parse_args
@@ -30,8 +30,8 @@ def main(args: List[str]):
     setup_logging(args.loglevel)
 
     if args.xmi_file is None:
-        xmi_filename = generateXmiFromPuml(args.puml_file)
-    document_object_model = readXmiFile(xmi_filename)
+        xmi_filename = generate_xmi_from_puml(args.puml_file)
+    document_object_model = read_xmi_file(xmi_filename)
     project_name = xmi_filename[:-5]
     # apps_names = getAppsNamesFromDocument(document_object_model)
     models = DjangoModel.generateCodeFromDocument(document_object_model)

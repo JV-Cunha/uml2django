@@ -6,6 +6,7 @@ from pathlib import Path
 
 from Cheetah.Template import Template
 import inflect
+
 from uml2django import templates
 from uml2django import config
 from uml2django.XmiArgoUmlTagsNames import (
