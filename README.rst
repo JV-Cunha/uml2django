@@ -16,11 +16,11 @@ It able to generate:
 **Installation**
 ----------------
 
-* Install via pip:::
+* Install via pip::
    
    pip install uml2django
 
-* Download from github:::
+* Download from github::
 
     git clone https://github.com/J-hanks/uml2django
 
