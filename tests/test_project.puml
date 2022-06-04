@@ -1,0 +1,7 @@
+@startuml
+package testapp {
+    class ExampleTestModel << Stereotype_1 >> << Stereotype_2 >> {
+        {field} -char_field : CharField(max_length=30)
+    }
+}
+@enduml
