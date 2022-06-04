@@ -32,7 +32,7 @@ def main(args: List[str]):
     if args.xmi_file is None:
         xmi_filename = generateXmiFromPuml(args.puml_file)
     document_object_model = readXmiFile(xmi_filename)
-    project_name = args.xmi_file[:-5]
+    project_name = xmi_filename[:-5]
     # apps_names = getAppsNamesFromDocument(document_object_model)
     models = DjangoModel.generateCodeFromDocument(document_object_model)
 
