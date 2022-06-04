@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from xml.dom import minidom
 from pathlib import Path
 
@@ -393,3 +394,8 @@ class DjangoModel():
             self.model_tests_path,
             "__init__.py",
         )
+
+    def to_json(self):
+        return json.dumps(
+            self, default=lambda o: o.__dict__,
+            sort_keys=True, indent=4)
