@@ -1,9 +1,8 @@
 ==========
 uml2django
 ==========
-Generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class diagrams <https://plantuml.com/class-diagram>`_.
-
-uml2django is able to generate: 
+uml2django is a tool for generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class diagrams <https://plantuml.com/class-diagram>`_.
+It able to generate: 
 
 * Models
 * Forms 
@@ -11,6 +10,19 @@ uml2django is able to generate:
 * Templates
 * Tests
 
+**Quick start**
+===============
+
+**Installation**
+----------------
+
+* Install via pip:::
+   
+   pip install uml2django
+
+* Download from github:::
+
+    git clone https://github.com/J-hanks/uml2django
 
 **Syntax**
 ==========
