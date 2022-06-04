@@ -1,6 +1,8 @@
 import os
 import sys
 from xml.dom import minidom
+from pathlib import Path
+
 from Cheetah.Template import Template
 import inflect
 from uml2django import templates
@@ -10,7 +12,6 @@ from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_CLASS_TAG_NAME
 )
 from uml2django.logger import _logger
-from pathlib import Path
 
 from uml2django.processDocument.DjangoModelField import DjangoModelField
 
@@ -52,7 +53,6 @@ class DjangoModel():
             # append the urls paths to the existing ones
             # else:
                 # apps_and_urls_paths[model.app_name] = model.urls_paths
-        print(apps_and_urls_paths[model.app_name])
 
         # generate the urls.py file for each app defined
         for app_name in apps_and_urls_paths:
@@ -67,9 +67,11 @@ class DjangoModel():
             app_urls_template.app_name = app_name
             # App urls.py path
             app_urls_file_path = os.path.join(
+                config.OUTPUT_PATH,
                 app_name,
                 "urls.py",
             )
+            print(app_urls_file_path)
             
             with open(app_urls_file_path, "w") as app_urls_file:
                 app_urls_file.write(str(app_urls_template))
@@ -83,9 +85,13 @@ class DjangoModel():
             form_class_name = f"{self.name}{action.capitalize()}Form"
             model_form_template = None
             if action == "create":
-                model_form_template = Template(file=templates.MODEL_CREATE_FORM_TEMPLATE_PATH)
+                model_form_template = Template(
+                    file=templates.MODEL_CREATE_FORM_TEMPLATE_PATH
+                )
             elif action == "update":
-                model_form_template = Template(file=templates.MODEL_UPDATE_FORM_TEMPLATE_PATH)
+                model_form_template = Template(
+                    file=templates.MODEL_UPDATE_FORM_TEMPLATE_PATH
+                )
             model_form_template.model = self
             model_form_file_path = os.path.join(
                 self.model_forms_path, f"{form_class_name}.py"

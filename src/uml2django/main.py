@@ -26,34 +26,16 @@ __license__ = "MIT"
 # API allowing them to be called directly from the terminal as a CLI
 # executable/script.
 def main(args: List[str]):
-    """Wrapper allowing :func:`` to be called with string arguments in a CLI fashion
-
-    Instead of returning the value from :func:``, it prints the result to the
-    ``stdout`` in a nicely formatted message.
-
-    Args:
-      args (List[str]): command line parameters as list of strings
-          (for example  ``["--verbose", "42"]``).
-    """
     args = parse_args(args)
     setup_logging(args.loglevel)
 
-    xmi_filename = args.xmi_file
-    puml_filename = args.puml_file
-    if xmi_filename is None:
-        xmi_filename = generateXmiFromPuml(puml_filename)
+    if args.xmi_file is None:
+        xmi_filename = generateXmiFromPuml(args.puml_file)
     document_object_model = readXmiFile(xmi_filename)
-    project_name = xmi_filename[:-5]
+    project_name = args.xmi_file[:-5]
     # apps_names = getAppsNamesFromDocument(document_object_model)
     models = DjangoModel.generateCodeFromDocument(document_object_model)
 
-    
-
-
-    # root element is a collection of minidom.Element and 
-    # some minidom.Text that are not used
-    # the root element encloses all classes and associations
-    # root_element = document_object_model.documentElement.getElementsByTagName(XmiArgoUmlTagsName.XMI_ARGO_ROOT_NAMESPACE_TAG_NAME)[0]
     sys.exit(1)
 
 
