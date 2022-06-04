@@ -9,6 +9,7 @@ uml2django is able to generate:
 * Forms 
 * Class Based Views
 * Templates
+* Tests
 
 
 **Syntax**

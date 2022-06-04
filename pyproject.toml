@@ -35,7 +35,6 @@ Homepage = "https://github.com/j-hanks/uml2django"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-exclude = ["uml2django.tests"]
 
 [project.scripts] 
 uml2django = "uml2django.main:run"
