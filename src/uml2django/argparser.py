@@ -120,11 +120,11 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     # Configure Output Path
     # Create path if not exists
     if parsed_args.output_path:
-        settings.OUTPUT_PATH = parsed_args.output_path
-        if not os.path.exists(settings.OUTPUT_PATH):
-            Path(settings.OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
+        settings.UML2DJANGO_OUTPUT_PATH = parsed_args.output_path
+        if not os.path.exists(settings.UML2DJANGO_OUTPUT_PATH):
+            Path(settings.UML2DJANGO_OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
         else:
-            if os.path.isfile(settings.OUTPUT_PATH):
+            if os.path.isfile(settings.UML2DJANGO_OUTPUT_PATH):
                 parser.error('Output directory path exists and is a file ')
     
     # if parse_args.clean:

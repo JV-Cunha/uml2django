@@ -49,7 +49,7 @@ class DjangoModelField():
         # If no field type was informed
         if len(name_and_field) == 1:
             self.field_type = "CharField"
-            self.field_options = [f"max_length={settings.CHAR_FIELD_MAX_LENGTH}"]
+            self.field_options = [f"max_length={settings.UML2DJANGO_CHAR_FIELD_MAX_LENGTH}"]
         else:
             field = name_and_field[1]
             field = field.split(" ")
@@ -71,10 +71,10 @@ class DjangoModelField():
         if not has_verbose_name:
             verbose_name = " ".join(self.name.split("_"))
             self.field_options.append(f"verbose_name=_('{verbose_name}')")
-        if not has_help_text and settings.GENERATE_FIELDS_HELP_TEXT:
+        if not has_help_text and settings.UML2DJANGO_GENERATE_FIELDS_HELP_TEXT:
             self.field_options.append(f"help_text=_('{verbose_name} help text')")
 
         if not char_field_has_max_length and self.field_type == "CharField":
-            self.field_options.append(f"max_length={settings.CHAR_FIELD_MAX_LENGTH}")
+            self.field_options.append(f"max_length={settings.UML2DJANGO_CHAR_FIELD_MAX_LENGTH}")
             # s = field
             # field_options = s[s.find("(")+1:s.find(")")]

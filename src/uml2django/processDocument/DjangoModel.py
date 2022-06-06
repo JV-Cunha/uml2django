@@ -69,7 +69,7 @@ class DjangoModel():
             app_urls_template.app_name = app_name
             # App urls.py path
             app_urls_file_path = os.path.join(
-                settings.OUTPUT_PATH,
+                settings.UML2DJANGO_OUTPUT_PATH,
                 app_name,
                 "urls.py",
             )
@@ -303,13 +303,12 @@ class DjangoModel():
     def setPaths(self):
         # App path
         self.app_path = os.path.join(
-            settings.OUTPUT_PATH,
+            settings.UML2DJANGO_OUTPUT_PATH,
             self.app_name,
         )
         # Models path
         self.app_models_path = os.path.join(
-            settings.OUTPUT_PATH,
-            self.app_name,
+            self.app_path,
             "models"
         )
         # Models __init__.py path
