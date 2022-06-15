@@ -4,9 +4,18 @@
 from django.db import models
 from django.utils.translation import gettext as _
 from django.urls import reverse
+#for $base_model in $model.base_fathers
+from ${$base_model.app_name}.models import $base_model.name
+#end for
 
-
-class ${model.name}(models.Model):
+class ${model.name}(
+    #if not $model.base_fathers
+    models.Model
+    #end if
+    #for $base_model in $model.base_fathers
+    ${base_model.name},
+    #end for
+):
     #for $field in $model.fields
     ${field.name} = models.${field.field_type}(
         #for $field_option in $field.field_options
@@ -18,9 +27,14 @@ class ${model.name}(models.Model):
     class Meta:
         verbose_name = "${model.name_lower}"
         verbose_name_plural = "${model.name_plural.lower()}"
+        #if $model.is_abstract
+        abstract = True
+        #end if
 
     # def __str__(self): 
     #     return self.
 
+    #if not $model.is_abstract
     def get_absolute_url(self):
         return reverse("${model.name_lower}-detail", args=[str(self.id)])
+    #end if
