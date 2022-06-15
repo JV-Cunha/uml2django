@@ -13,10 +13,12 @@ from uml2django import templates
 from uml2django import settings
 from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_ATTRIBUTE_TAG_NAME,
+    XMI_ARGO_CLASS_ABSTRACT_ATTRIBUTE,
     XMI_ARGO_CLASS_TAG_NAME
 )
 from uml2django.logger import _logger
 from uml2django.processDocument import add_import_to_init_file
+from uml2django.processDocument.is_element_abstract import is_element_abstract
 
 from uml2django.processDocument.DjangoModelField import DjangoModelField
 
@@ -26,9 +28,12 @@ class DjangoModel():
     xmi_id = None
     app_name = str()
     name = str()
+    base_fathers = []
     fields = list()
     views_path = str()
     urls_paths = []
+    is_abstract = False
+    
 
     actions = [
         'create', 'delete', 'detail',
@@ -44,10 +49,20 @@ class DjangoModel():
         self.element = element
         self.setNamesFromElement()
         self.app_name = element.attributes.get("namespace").value
+        self.xmi_id = element.attributes.get("xmi.id").value
+        self.is_abstract = is_element_abstract(self.element)
         self.setFieldsFromElement()
         self.setPaths()
         self.urls_paths = []
-
+        self.base_fathers = []
+    
+    def __str__(self) -> str:
+        return self.name
+            
+    def add_base_father(self, django_model):
+        self.base_fathers.append(django_model)
+        _logger.debug(f"{str(self)} fathers: {[str(father) for father in self.base_fathers]}")
+        
     def generate_model_forms(self):
         Path(self.model_forms_path).mkdir(parents=True, exist_ok=True)
         for action in ["create", "update"]:
@@ -215,15 +230,12 @@ class DjangoModel():
             app_urls_file.close()
 
     def generate_model_python_file(self):
-        model = self
         django_model_template = Template(file=templates.MODEL_TEMPLATE_PATH)
         django_model_template.model = self
         django_model_template.settings = settings
         Path(self.app_models_path).mkdir(parents=True, exist_ok=True)
-        model_file_path = os.path.join(
-            self.app_models_path, f"{model.name}.py")
         # write model file
-        with open(model_file_path, "w") as text_file:
+        with open(self.model_file_path, "w") as text_file:
             text_file.write(str(django_model_template))
             text_file.close()
         # add import to __init__.py
@@ -271,6 +283,10 @@ class DjangoModel():
         self.app_models_init_path = os.path.join(
             self.app_models_path,
             "__init__.py"
+        )
+        # Model file path
+        self.model_file_path = os.path.join(
+            self.app_models_path, f"{self.name}.py"
         )
         # App Forms path
         self.app_forms_path = os.path.join(

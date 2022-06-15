@@ -1,7 +1,7 @@
 from xml.dom import minidom
 
 from uml2django.XmiArgoUmlTagsNames import XMI_ARGO_CLASS_TAG_NAME
-from uml2django.processDocument import DjangoModel
+from uml2django.processDocument.DjangoModel import DjangoModel
 
 
 def get_django_models_from_minidom_document(
