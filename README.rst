@@ -67,6 +67,31 @@ It able to generate:
         }
     @enduml
 
+**Models Inheritance**
+----------------------
+    
+    * `Meta inheritance <https://docs.djangoproject.com/en/4.0/topics/db/models/#abstract-base-classes>`__ ::
+
+          @startuml
+            package exampledjangoapp {
+                abstract class BaseModel {
+                    {field} name : CharField(max_length=30)
+                }
+                class ExtendedModel {
+                    {field} name : CharField(max_length=30)
+                }
+                BaseModel <-- ExtendedModel : inherit
+            }
+            package example_django_app {
+                class MySecondModel {
+
+                }
+            }
+        @enduml
+
+    * `Multi-table inheritance <https://peps.python.org/pep-0008/#package-and-module-names>`__
+    * `Proxy inheritance <https://peps.python.org/pep-0008/#package-and-module-names>`__
+
 
 
 **Model Fields**
