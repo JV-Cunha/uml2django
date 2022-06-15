@@ -2,7 +2,7 @@
 import sys
 from xml.dom import minidom
 from uml2django import settings
-from uml2django.logger import _logger
+from uml2django import _logger
 
 
 class DjangoModelField():

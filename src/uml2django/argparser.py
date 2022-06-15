@@ -1,12 +1,25 @@
+import logging
 import os
 import argparse
-import logging
 from typing import List
 from pathlib import Path
 
 from uml2django import __version__
 from uml2django import settings
-from uml2django.processDocument import generate_xmi_from_puml, read_xmi_file
+from uml2django import _logger, setup_logging
+from uml2django.XmiArgoUmlTagsNames import (
+    XMI_ARGO_ASSOCIATION_TAG_NAME,
+    XMI_ARGO_CLASS_TAG_NAME
+)
+from uml2django.processDocument import (
+    find_django_model_by_xmi_id,
+    generate_xmi_from_puml,
+    get_django_models_from_minidom_document,
+    load_associations,
+    read_xmi_file
+)
+from uml2django.processDocument import get_xmi_association_name
+from uml2django.processDocument import get_xmi_id_of_element
 
 
 def is_valid_file(parser: argparse.ArgumentParser, arg: str) -> str:
@@ -110,29 +123,35 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     )
 
     parsed_args = parser.parse_args(args)
+    setup_logging(parsed_args.loglevel)
+
     # XMI file or PUML file MUST be inform
     if not (parsed_args.xmi_file or parsed_args.puml_file):
         parser.error('No file given, add --xmi or --puml')
-
     # XMI file or PUML file MUST be inform, NOT BOTH
     if (parsed_args.xmi_file and parsed_args.puml_file):
         parser.error('You should inform --xmi or --puml')
-    
+    # if not xmi_file informed, generate from plantuml file
     if parsed_args.xmi_file is None:
         xmi_filename = generate_xmi_from_puml(parsed_args.puml_file)
     settings.DOCUMENT_OBJECT_MODEL = read_xmi_file(xmi_filename)
+    settings.DJANGO_MODELS = get_django_models_from_minidom_document(
+        settings.DOCUMENT_OBJECT_MODEL
+    )
+    load_associations()
 
     # Configure Output Path
-    # Create path if not exists
     if parsed_args.output_path:
         settings.UML2DJANGO_OUTPUT_PATH = parsed_args.output_path
-        if not os.path.exists(settings.UML2DJANGO_OUTPUT_PATH):
-            Path(settings.UML2DJANGO_OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
+        # Create path if not exists or if exists and is a file
+        if not os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) or (
+            os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) and
+            os.path.isfile(settings.UML2DJANGO_OUTPUT_PATH)
+        ):
+            Path(settings.UML2DJANGO_OUTPUT_PATH).mkdir(
+                parents=True, exist_ok=True
+            )
         else:
-            if os.path.isfile(settings.UML2DJANGO_OUTPUT_PATH):
-                parser.error('Output directory path exists and is a file ')
-    
-    # if parse_args.clean:
-                
+            parser.error('Output directory path exists')
 
     return parsed_args

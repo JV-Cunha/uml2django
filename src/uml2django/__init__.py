@@ -1,6 +1,7 @@
 import sys
 
 from .settings import settings
+from .logger import _logger, setup_logging
 
 if sys.version_info[:2] >= (3, 8):
     # TODO: Import directly (no need for conditional) when `python_requires = >= 3.8`

@@ -1,6 +1,6 @@
 from xml.dom import minidom
 
-from uml2django.logger import _logger
+from uml2django import _logger
 
 
 def get_xmi_id_of_element(element : minidom.Element):

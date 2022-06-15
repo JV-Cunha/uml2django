@@ -1,6 +1,6 @@
 
 from uml2django import  settings
-from uml2django.logger import _logger
+from uml2django import _logger
 from uml2django.processDocument import DjangoModel
 
 

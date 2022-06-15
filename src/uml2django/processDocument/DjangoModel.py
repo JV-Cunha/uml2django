@@ -16,7 +16,7 @@ from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_CLASS_ABSTRACT_ATTRIBUTE,
     XMI_ARGO_CLASS_TAG_NAME
 )
-from uml2django.logger import _logger
+from uml2django import _logger
 from uml2django.processDocument import add_import_to_init_file
 from uml2django.processDocument.is_element_abstract import is_element_abstract
 
