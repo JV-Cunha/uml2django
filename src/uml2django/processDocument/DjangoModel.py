@@ -5,7 +5,9 @@ from xml.dom import minidom
 from pathlib import Path
 
 from Cheetah.Template import Template
+from redbaron import RedBaron
 import inflect
+
 
 from uml2django import templates
 from uml2django import settings
@@ -14,6 +16,7 @@ from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_CLASS_TAG_NAME
 )
 from uml2django.logger import _logger
+from uml2django.processDocument import add_import_to_init_file
 
 from uml2django.processDocument.DjangoModelField import DjangoModelField
 
@@ -25,7 +28,6 @@ class DjangoModel():
     name = str()
     fields = list()
     views_path = str()
-    urls_imports = []
     urls_paths = []
 
     actions = [
@@ -33,53 +35,18 @@ class DjangoModel():
         'list', 'update',
     ]
 
-    @classmethod
-    def generateCodeFromDocument(cls, document: minidom.Document) -> list:
-        # This dictonary is used to generate the urls.py of each app defined
-        # It contais the app name as key and the urls_paths as value
-        apps_and_urls_paths = {
-            # app_name: urls_paths,
-            # app_name_2: urls_paths_2,
-        }
-
-        for model in cls.getFromDocument(document):
-            model.generate_model_python_file()
-            model.generate_model_forms()
-            model.generate_class_based_views()
-            model.generate_templates()
-
-            # if app_name is not in the dict
-            if model.app_name not in apps_and_urls_paths:
-                apps_and_urls_paths[model.app_name] = model.urls_paths
-            # if the app name already in the dict
-            # append the urls paths to the existing ones
-            # else:
-                # apps_and_urls_paths[model.app_name] = model.urls_paths
-
-        # generate the urls.py file for each app defined
-        for app_name in apps_and_urls_paths:
-            urls_paths = apps_and_urls_paths[app_name]
-
-            app_urls_template = Template(
-                file=templates.getTemplatePath(
-                    filename="urls.tmpl"
-                )
+    def __init__(self, element: minidom.Element = None):
+        if not element:
+            _logger.debug(
+                "An element must be given to construct DjangoModel object"
             )
-            app_urls_template.urls_paths = urls_paths
-            app_urls_template.app_name = app_name
-            # App urls.py path
-            app_urls_file_path = os.path.join(
-                settings.UML2DJANGO_OUTPUT_PATH,
-                app_name,
-                "urls.py",
-            )
-            print(app_urls_file_path)
-            
-            with open(app_urls_file_path, "w") as app_urls_file:
-                app_urls_file.write(str(app_urls_template))
-                app_urls_file.close()
-
-        return None
+            sys.exit(1)
+        self.element = element
+        self.setNamesFromElement()
+        self.app_name = element.attributes.get("namespace").value
+        self.setFieldsFromElement()
+        self.setPaths()
+        self.urls_paths = []
 
     def generate_model_forms(self):
         Path(self.model_forms_path).mkdir(parents=True, exist_ok=True)
@@ -103,12 +70,12 @@ class DjangoModel():
                 text_file.write(str(model_form_template))
                 text_file.close()
             # add import to model forms __init__.py file
-            self.add_import_to_init_file(
+            add_import_to_init_file(
                 self.model_forms_init_path,
                 f"from .{form_class_name} import {form_class_name}\n"
             )
             # add import to app forms __init__.py file
-            self.add_import_to_init_file(
+            add_import_to_init_file(
                 self.app_forms_init_path,
                 f"from .{self.name_lower} import {form_class_name}\n"
             )
@@ -154,35 +121,15 @@ class DjangoModel():
                 view_file.close()
 
             # add import to __init__.py inside model views path
-            self.add_import_to_init_file(
+            add_import_to_init_file(
                 self.model_views_init_file_path,
                 f"from .{self.name}{cap_view_name}View import {self.name}{cap_view_name}View\n"
             )
             # add import to __init__.py inside app views path
-            self.add_import_to_init_file(
+            add_import_to_init_file(
                 self.app_views_init_file_path,
                 f"from .{self.name_lower} import {self.name}{cap_view_name}View\n"
             )
-
-            # append view path self urls_paths list
-            if view_name in ("update", "delete"):
-                self.urls_paths.append((
-                    f"{self.name}/<int:pk>/{view_name}",
-                    f"{self.name}{cap_view_name}View",
-                    f"{self.name_lower}-{view_name}"
-                ))
-            elif view_name == "detail":
-                self.urls_paths.append((
-                    f"{self.name}/<int:pk>",
-                    f"{self.name}{cap_view_name}View",
-                    f"{self.name_lower}-{view_name}"
-                ))
-            else:
-                self.urls_paths.append((
-                    f"{self.name}/{view_name}",
-                    f"{self.name}{cap_view_name}View",
-                    f"{self.name_lower}-{view_name}"
-                ))
 
         # Generate tests
         Path(self.model_tests_path).mkdir(parents=True, exist_ok=True)
@@ -202,46 +149,70 @@ class DjangoModel():
             test_file.write(str(model_views_test_template))
             test_file.close()
         # add import to model tests __init__.py
-        self.add_import_to_init_file(
+        add_import_to_init_file(
             self.model_tests_init_file_path,
             f"from .{self.name}ViewsTest import {self.name}ViewsTest\n"
         )
         # add import to app tests __init__.py
-        self.add_import_to_init_file(
+        add_import_to_init_file(
             self.app_tests_init_file_path,
             f"from .{self.name_lower} import {self.name}ViewsTest\n"
         )
 
-    @classmethod
-    def getFromDocument(cls, document: minidom.Document) -> list:
-        """Get the xmi classes that have its name attribute setted
-        Classes whitout name are used to represent association,
-        they have xmi_id attribute setted instead
+    def generate_cbv_urls_routing(self):
+        if not os.path.exists(self.app_path):
+            # create app path if not exists
+            Path(self.app_path).mkdir(parents=True, exist_ok=True)
 
-        :param document: the minidom.Document object instance
-        :type document: minidom.Document
-        :return: The List with classes elements
-        :rtype: List[minidom.Element]
-        """
-        django_models = []
-        class_elements = document.documentElement.getElementsByTagName(
-            XMI_ARGO_CLASS_TAG_NAME
+        for view_name in self.actions:
+            cap_view_name = view_name.capitalize()
+            # append view path to self.urls_paths list
+            # update and delete view
+            if view_name in ("update", "delete"):
+                self.urls_paths.append((
+                    f"{self.name}/<int:pk>/{view_name}",
+                    f"{self.name}{cap_view_name}View",
+                    f"{self.name_lower}-{view_name}"
+                ))
+            elif view_name == "detail":
+                self.urls_paths.append((
+                    f"{self.name}/<int:pk>",
+                    f"{self.name}{cap_view_name}View",
+                    f"{self.name_lower}-{view_name}"
+                ))
+            else:
+                # delete and list view comes here
+                self.urls_paths.append((
+                    f"{self.name}/{view_name}",
+                    f"{self.name}{cap_view_name}View",
+                    f"{self.name_lower}-{view_name}"
+                ))
+
+        existing_url_patterns = []
+        if os.path.exists(self.app_urls_file_path):
+            with open(self.app_urls_file_path, "r") as source:
+                urls_node = RedBaron(source.read())
+                existing_url_patterns_nodes = urls_node.find("name", value="urlpatterns").parent.value
+                for existing_url_pattern in existing_url_patterns_nodes:
+                    urls_arary = str(existing_url_pattern)[5:-1].replace("\"","").split(",")
+                    urls_arary[1] = urls_arary[1].replace(".as_view()", "")
+                    urls_arary[1] = urls_arary[1].replace(" ", "")
+                    urls_arary[2] = urls_arary[2].replace("name=", "")
+                    existing_url_patterns.append(urls_arary)
+        
+        extended_urls_paths = []
+        extended_urls_paths = self.urls_paths + existing_url_patterns
+        app_urls_template = Template(
+            file=templates.getTemplatePath(
+                filename="urls.tmpl"
+            )
         )
-
-        for class_element in class_elements:
-            if class_element.attributes.get("name") is not None:
-                django_models.append(DjangoModel(class_element))
-        return django_models
-
-    def __init__(self, element: minidom.Element = None):
-        if not element:
-            _logger.debug("An element must be given")
-            sys.exit(1)
-        self.element = element
-        self.setNamesFromElement()
-        self.app_name = element.attributes.get("namespace").value
-        self.setFieldsFromElement()
-        self.setPaths()
+        app_urls_template.urls_paths = extended_urls_paths
+        app_urls_template.app_name = self.app_name
+        
+        with open(self.app_urls_file_path, "w") as app_urls_file:
+            app_urls_file.write(str(app_urls_template))
+            app_urls_file.close()
 
     def generate_model_python_file(self):
         model = self
@@ -249,42 +220,22 @@ class DjangoModel():
         django_model_template.model = self
         django_model_template.settings = settings
         Path(self.app_models_path).mkdir(parents=True, exist_ok=True)
-        model_file_path = os.path.join(self.app_models_path, f"{model.name}.py")
+        model_file_path = os.path.join(
+            self.app_models_path, f"{model.name}.py")
         # write model file
         with open(model_file_path, "w") as text_file:
             text_file.write(str(django_model_template))
             text_file.close()
         # add import to __init__.py
-        self.add_import_to_init_file(
+        add_import_to_init_file(
             self.app_models_init_path,
             f"from .{self.name} import {self.name}\n"
         )
 
-    def add_import_to_init_file(
-        self, init_file_path: str, import_statement: str
-    ) -> None:
-        """Checks if init file already has the import statement
-        and add it if not.
-
-        Args:
-            init_file_path (str): The __init__.py file path
-            import_statement (str): The import statement to add after check if exists
-        """
-
-        already_has_import_statement = False
-        if os.path.exists(init_file_path):
-            with open(init_file_path, "r") as init_file:
-                if import_statement in init_file.read():
-                    already_has_import_statement = True
-                init_file.close()
-
-        if not already_has_import_statement:
-            with open(init_file_path, "a") as init_file:
-                init_file.write(import_statement)
-                init_file.close()
-
     def setNamesFromElement(self):
-        self.name = self.element.attributes.get("name").value.lower().capitalize()
+        self.name = self.element.attributes.get(
+            "name"
+        ).value.capitalize()
         self.name_lower = self.name.lower()
         self.name_plural = inflect.engine().plural(self.name)
         return self.name
@@ -306,7 +257,12 @@ class DjangoModel():
             settings.UML2DJANGO_OUTPUT_PATH,
             self.app_name,
         )
-        # Models path
+        # App urls.py path
+        self.app_urls_file_path = os.path.join(
+            settings.UML2DJANGO_OUTPUT_PATH,
+            "urls.py",
+        )
+        # app Models  directory path
         self.app_models_path = os.path.join(
             self.app_path,
             "models"

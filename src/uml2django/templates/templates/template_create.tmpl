@@ -1,10 +1,10 @@
 #if $settings.UML2DJANGO_USE_BASE_TEMPLATE
 {% extends "${settings.UML2DJANGO_BASE_TEMPLATE}" %}
 #end if
+{% load static%}
 #if $settings.UML2DJANGO_USE_I18N
 {% load i18n %}
 #end if
-## {% load static%}
 #if $settings.UML2DJANGO_USE_DJANGO_CRISPY_FORMS
 {% load crispy_forms_tags %}
 #end if

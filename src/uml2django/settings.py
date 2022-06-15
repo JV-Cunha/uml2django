@@ -1,4 +1,9 @@
+from xml.dom.expatbuilder import DOCUMENT_NODE
+
+
 class settings:
+    DOCUMENT_OBJECT_MODEL = None
+    
     UML2DJANGO_GENERATE_FIELDS_HELP_TEXT = True
 
     UML2DJANGO_OUTPUT_PATH = "uml2django_output"

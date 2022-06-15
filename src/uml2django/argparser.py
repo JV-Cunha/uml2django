@@ -6,6 +6,7 @@ from pathlib import Path
 
 from uml2django import __version__
 from uml2django import settings
+from uml2django.processDocument import generate_xmi_from_puml, read_xmi_file
 
 
 def is_valid_file(parser: argparse.ArgumentParser, arg: str) -> str:
@@ -116,6 +117,10 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     # XMI file or PUML file MUST be inform, NOT BOTH
     if (parsed_args.xmi_file and parsed_args.puml_file):
         parser.error('You should inform --xmi or --puml')
+    
+    if parsed_args.xmi_file is None:
+        xmi_filename = generate_xmi_from_puml(parsed_args.puml_file)
+    settings.DOCUMENT_OBJECT_MODEL = read_xmi_file(xmi_filename)
 
     # Configure Output Path
     # Create path if not exists
