@@ -5,13 +5,14 @@ References:
     - https://setuptools.pypa.io/en/latest/userguide/entry_point.html
     - https://pip.pypa.io/en/stable/reference/pip_install
 """
-
+import os
 import sys
 from typing import List
-from uml2django import settings
+from uml2django import _logger, settings
 from uml2django.processDocument import (
     read_xmi_file,
     generate_xmi_from_puml,
+    start_django_project,
 )
 from uml2django.argparser import parse_args
 from uml2django.processDocument.DjangoModel import DjangoModel
@@ -28,6 +29,8 @@ __license__ = "MIT"
 # executable/script.
 def main(args: List[str]):
     args = parse_args(args)
+    if settings.UML2DJANGO_GENERATE_DJANGO_PROJECT:
+        start_django_project()
     
     for django_model in settings.DJANGO_MODELS:
         django_model.generate_model_python_file()

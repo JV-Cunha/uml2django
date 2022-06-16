@@ -124,7 +124,20 @@ def parse_args(args: List[str]) -> argparse.Namespace:
 
     parsed_args = parser.parse_args(args)
     setup_logging(parsed_args.loglevel)
+    
+    # Configure Output Path
+    if parsed_args.output_path:
+        settings.UML2DJANGO_OUTPUT_PATH = parsed_args.output_path
+        # Create path if not exists or if exists and is a file
+    if not os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) or (
+        os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) and
+        os.path.isfile(settings.UML2DJANGO_OUTPUT_PATH)
+    ):
+        Path(settings.UML2DJANGO_OUTPUT_PATH).mkdir(
+            parents=True, exist_ok=True
+        )
 
+    # Validate XMI file and PUML file
     # XMI file or PUML file MUST be inform
     if not (parsed_args.xmi_file or parsed_args.puml_file):
         parser.error('No file given, add --xmi or --puml')
@@ -134,24 +147,14 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     # if not xmi_file informed, generate from plantuml file
     if parsed_args.xmi_file is None:
         xmi_filename = generate_xmi_from_puml(parsed_args.puml_file)
+    settings.UML2DJANGO_PROJECT_NAME = xmi_filename[:-4].split("/")[-1]
+    _logger.debug(f"PROJECT_NAME: {settings.UML2DJANGO_PROJECT_NAME}")
     settings.DOCUMENT_OBJECT_MODEL = read_xmi_file(xmi_filename)
     settings.DJANGO_MODELS = get_django_models_from_minidom_document(
         settings.DOCUMENT_OBJECT_MODEL
     )
     load_associations()
 
-    # Configure Output Path
-    if parsed_args.output_path:
-        settings.UML2DJANGO_OUTPUT_PATH = parsed_args.output_path
-        # Create path if not exists or if exists and is a file
-        if not os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) or (
-            os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) and
-            os.path.isfile(settings.UML2DJANGO_OUTPUT_PATH)
-        ):
-            Path(settings.UML2DJANGO_OUTPUT_PATH).mkdir(
-                parents=True, exist_ok=True
-            )
-        else:
-            parser.error('Output directory path exists')
+    
 
     return parsed_args

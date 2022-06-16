@@ -271,7 +271,7 @@ class DjangoModel():
         )
         # App urls.py path
         self.app_urls_file_path = os.path.join(
-            settings.UML2DJANGO_OUTPUT_PATH,
+            self.app_path,
             "urls.py",
         )
         # app Models  directory path
