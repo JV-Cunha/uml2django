@@ -72,7 +72,7 @@ It able to generate:
     
     * `Meta inheritance <https://docs.djangoproject.com/en/4.0/topics/db/models/#abstract-base-classes>`__ ::
 
-          @startuml
+        @startuml
             package exampledjangoapp {
                 abstract class BaseModel {
                     {field} name : CharField(max_length=30)
@@ -82,16 +82,16 @@ It able to generate:
                 }
                 BaseModel <-- ExtendedModel : inherit
             }
-            package example_django_app {
-                class MySecondModel {
-
-                }
-            }
         @enduml
 
     * `Multi-table inheritance <https://peps.python.org/pep-0008/#package-and-module-names>`__
     * `Proxy inheritance <https://peps.python.org/pep-0008/#package-and-module-names>`__
 
+**Models Relashionships**
+-------------------------
+    * `Many-to-one <https://docs.djangoproject.com/en/4.0/topics/db/examples/many_to_one/#many-to-one-relationships>`__ ::
+    * `Many-to-many <https://docs.djangoproject.com/en/4.0/topics/db/examples/many_to_many/#many-to-many-relationships>`__ ::
+    * `One-to-one <https://docs.djangoproject.com/en/4.0/topics/db/examples/one_to_one/#one-to-one-relationships>`__ ::
 
 
 **Model Fields**
