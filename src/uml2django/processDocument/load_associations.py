@@ -3,7 +3,9 @@ from uml2django import _logger
 from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_ASSOCIATION_TAG_NAME, XMI_ARGO_CLASS_TAG_NAME
 )
-from uml2django.processDocument import find_django_model_by_xmi_id, get_xmi_association_name, get_xmi_id_of_element
+from uml2django.processDocument.find_django_model_by_xmi_id import find_django_model_by_xmi_id
+from uml2django.processDocument.get_xmi_association_name import get_xmi_association_name
+from uml2django.processDocument.get_xmi_id_of_element import get_xmi_id_of_element
 
 
 def load_associations():
