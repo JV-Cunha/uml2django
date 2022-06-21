@@ -18,6 +18,7 @@ from uml2django.XmiArgoUmlTagsNames import (
 )
 from uml2django import _logger
 from uml2django.processDocument import add_import_to_init_file
+from uml2django.processDocument.file_writer import file_writer
 from uml2django.processDocument.is_element_abstract import is_element_abstract
 
 from uml2django.processDocument.DjangoModelField import DjangoModelField
@@ -33,7 +34,6 @@ class DjangoModel():
     views_path = str()
     urls_paths = []
     is_abstract = False
-    
 
     actions = [
         'create', 'delete', 'detail',
@@ -55,18 +55,18 @@ class DjangoModel():
         self.setPaths()
         self.urls_paths = []
         self.base_fathers = []
-        
+
         if self.app_name not in settings.UML2DJANGO_APPS_NAMES:
             settings.UML2DJANGO_APPS_NAMES.append(self.app_name)
-        
-    
+
     def __str__(self) -> str:
         return self.name
-            
+
     def add_base_father(self, django_model):
         self.base_fathers.append(django_model)
-        _logger.debug(f"{str(self)} fathers: {[str(father) for father in self.base_fathers]}")
-        
+        _logger.debug(
+            f"{str(self)} fathers: {[str(father) for father in self.base_fathers]}")
+
     def generate_model_forms(self):
         Path(self.model_forms_path).mkdir(parents=True, exist_ok=True)
         for action in ["create", "update"]:
@@ -213,14 +213,16 @@ class DjangoModel():
             with open(self.app_urls_file_path, "r") as source:
                 # Parse code with RedBaron
                 urls_node = RedBaron(source.read())
-                existing_url_patterns_nodes = urls_node.find("name", value="urlpatterns").parent.value
+                existing_url_patterns_nodes = urls_node.find(
+                    "name", value="urlpatterns").parent.value
                 for existing_url_pattern in existing_url_patterns_nodes:
-                    urls_arary = str(existing_url_pattern)[5:-1].replace("\"","").split(",")
+                    urls_arary = str(existing_url_pattern)[
+                        5:-1].replace("\"", "").split(",")
                     urls_arary[1] = urls_arary[1].replace(".as_view()", "")
                     urls_arary[1] = urls_arary[1].replace(" ", "")
                     urls_arary[2] = urls_arary[2].replace("name=", "")
                     existing_url_patterns.append(urls_arary)
-        
+
         extended_urls_paths = []
         extended_urls_paths = self.urls_paths + existing_url_patterns
         app_urls_template = Template(
@@ -230,7 +232,7 @@ class DjangoModel():
         )
         app_urls_template.urls_paths = extended_urls_paths
         app_urls_template.app_name = self.app_name
-        
+
         with open(self.app_urls_file_path, "w") as app_urls_file:
             app_urls_file.write(str(app_urls_template))
             app_urls_file.close()
@@ -249,6 +251,24 @@ class DjangoModel():
             self.app_models_init_path,
             f"from .{self.name} import {self.name}\n"
         )
+
+    def generate_rest_api(self):
+        Path(
+            self.app_rest_api_serializers_path
+        ).mkdir(parents=True, exist_ok=True)
+        django_model_serializer_template = self.get_template_object(
+            template_path=templates.MODEL_SERIALIZER_TEMPLATE_PATH
+        )
+        file_writer(
+            file_path=self.app_rest_api_serializers_model_serializer_path,
+            content=(str(django_model_serializer_template))
+        )
+
+    def get_template_object(self, template_path=str):
+        template_obj = Template(file=template_path)
+        template_obj.model = self
+        template_obj.settings = settings
+        return template_obj
 
     def setNamesFromElement(self):
         self.name = self.element.attributes.get(
@@ -292,25 +312,49 @@ class DjangoModel():
             "__init__.py"
         )
         # Model file path
+        # example: some_django_app/models/SomeModel.py
         self.model_file_path = os.path.join(
-            self.app_models_path, f"{self.name}.py"
+            self.app_models_path,
+            f"{self.name}.py"
+        )
+        # app rest_api path
+        # example: some_django_app/rest_api/
+        self.app_rest_api_path = os.path.join(
+            self.app_path,
+            "rest_api"
+        )
+        # app rest_api serializers path
+        # example: some_django_app/rest_api/serializers
+        self.app_rest_api_serializers_path = os.path.join(
+            self.app_rest_api_path,
+            "serializers"
+        )
+        # app rest_api model serializer path
+        # example: some_django_app/rest_api/serializers/SomeModelSerializer.py
+        self.app_rest_api_serializers_model_serializer_path = os.path.join(
+            self.app_rest_api_serializers_path,
+            f"{self.name}Serializer.py"
         )
         # App Forms path
+        # example: some_django_app/forms/
         self.app_forms_path = os.path.join(
             self.app_path,
             "forms",
         )
         # App Forms __init__.py path
+        # example: some_django_app/forms/__init__.py
         self.app_forms_init_path = os.path.join(
             self.app_forms_path,
             "__init__.py"
         )
         # Model Forms path
+        # example: some_django_app/forms/somemodel/
         self.model_forms_path = os.path.join(
             self.app_forms_path,
             self.name_lower
         )
         # App Forms __init__.py path
+        # example: some_django_app/forms/somemodel/__init__.py
         self.model_forms_init_path = os.path.join(
             self.model_forms_path,
             "__init__.py"

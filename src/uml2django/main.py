@@ -35,6 +35,7 @@ def main(args: List[str]):
     for django_model in settings.DJANGO_MODELS:
         django_model.generate_model_python_file()
         if not django_model.is_abstract:
+            django_model.generate_rest_api()
             django_model.generate_model_forms()
             django_model.generate_class_based_views()
             django_model.generate_cbv_urls_routing()
