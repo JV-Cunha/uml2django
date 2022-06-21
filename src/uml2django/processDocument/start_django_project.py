@@ -30,7 +30,7 @@ def start_django_project():
         django_management.call_command(
             'startapp',
             (
-                f"app_name",
+                f"{app_name}",
                 app_path
             )
         )
@@ -79,20 +79,31 @@ def start_django_project():
         settings.UML2DJANGO_PROJECT_NAME,
         "urls.py"
     )
+    # Read project urls.py file
+    urls_node = None
     with open(django_project_urls_file_path, "r") as source:
         # Parse code with RedBaron
         urls_node = RedBaron(source.read())
-        existing_url_patterns_nodes = urls_node.find("name", value="urlpatterns").parent.value
+        source.close()
+    
+    # get url_patterns_nodes
+    existing_url_patterns_nodes = urls_node.find("name", value="urlpatterns").parent.value
+    # append already existed url_patterns
+    existing_urls = []
+    for existing_url_pattern_node in existing_url_patterns_nodes:
+        existing_urls.append(existing_url_pattern_node.dumps())
         
-        existing_urls = []
-        for existing_url_pattern_node in existing_url_patterns_nodes:
-            existing_urls.append(existing_url_pattern_node.dumps())
-            
-        for app_name in settings.UML2DJANGO_APPS_NAMES:
-            existing_urls.append(f"path('/', include('{app_name}.urls'))")
-            
-        existing_url_patterns_nodes.value = ",\n".join(existing_urls)
+    # append the include directive for each app_name 
+    for app_name in settings.UML2DJANGO_APPS_NAMES:
+        existing_urls.append(f"path('/', include('{app_name}.urls'))")
         
-        print("################")
-        print(urls_node.dumps())
+    # Set the urls_patterns nodes value
+    # by joining the array
+    existing_url_patterns_nodes.value = ",\n".join(existing_urls)
+    
+    # write the the modified code to
+    # django project urls file 
+    with open(django_project_urls_file_path, "w") as source:
+        source.write(urls_node.dumps())
+        source.close()
         
