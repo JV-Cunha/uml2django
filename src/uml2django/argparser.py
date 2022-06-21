@@ -129,12 +129,13 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     # Configure Output Path
     if parsed_args.output_path:
         settings.UML2DJANGO_OUTPUT_PATH = parsed_args.output_path
-        # Create path if not exists or if exists and is a file
+    # Check if output path exists
     if os.path.isdir(settings.UML2DJANGO_OUTPUT_PATH):
         if settings.UML2DJANGO_OVERRIDE:
             _logger.debug("OVERRIDE OUTPUT")
             # remove the directory and all it's content
             shutil.rmtree(settings.UML2DJANGO_OUTPUT_PATH)
+    # Create path if not exists or if exists and is a file
     if not os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) or (
         os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) and
         os.path.isfile(settings.UML2DJANGO_OUTPUT_PATH)

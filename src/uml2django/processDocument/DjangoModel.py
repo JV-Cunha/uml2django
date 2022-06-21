@@ -55,6 +55,10 @@ class DjangoModel():
         self.setPaths()
         self.urls_paths = []
         self.base_fathers = []
+        
+        if self.app_name not in settings.UML2DJANGO_APPS_NAMES:
+            settings.UML2DJANGO_APPS_NAMES.append(self.app_name)
+        
     
     def __str__(self) -> str:
         return self.name
