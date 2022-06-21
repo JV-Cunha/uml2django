@@ -204,8 +204,10 @@ class DjangoModel():
                 ))
 
         existing_url_patterns = []
+        # If url file exists
         if os.path.exists(self.app_urls_file_path):
             with open(self.app_urls_file_path, "r") as source:
+                # Parse code with RedBaron
                 urls_node = RedBaron(source.read())
                 existing_url_patterns_nodes = urls_node.find("name", value="urlpatterns").parent.value
                 for existing_url_pattern in existing_url_patterns_nodes:
@@ -269,6 +271,7 @@ class DjangoModel():
             settings.UML2DJANGO_OUTPUT_PATH,
             self.app_name,
         )
+        _logger.debug(f"OUTPUT_PATH: {settings.UML2DJANGO_OUTPUT_PATH}")
         # App urls.py path
         self.app_urls_file_path = os.path.join(
             self.app_path,

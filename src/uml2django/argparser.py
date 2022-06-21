@@ -1,6 +1,7 @@
 import logging
 import os
 import argparse
+import shutil
 from typing import List
 from pathlib import Path
 
@@ -129,6 +130,11 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     if parsed_args.output_path:
         settings.UML2DJANGO_OUTPUT_PATH = parsed_args.output_path
         # Create path if not exists or if exists and is a file
+    if os.path.isdir(settings.UML2DJANGO_OUTPUT_PATH):
+        if settings.UML2DJANGO_OVERRIDE:
+            _logger.debug("OVERRIDE OUTPUT")
+            # remove the directory and all it's content
+            shutil.rmtree(settings.UML2DJANGO_OUTPUT_PATH)
     if not os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) or (
         os.path.exists(settings.UML2DJANGO_OUTPUT_PATH) and
         os.path.isfile(settings.UML2DJANGO_OUTPUT_PATH)
@@ -150,6 +156,7 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     settings.UML2DJANGO_PROJECT_NAME = xmi_filename[:-4].split("/")[-1]
     _logger.debug(f"PROJECT_NAME: {settings.UML2DJANGO_PROJECT_NAME}")
     settings.DOCUMENT_OBJECT_MODEL = read_xmi_file(xmi_filename)
+    
     settings.DJANGO_MODELS = get_django_models_from_minidom_document(
         settings.DOCUMENT_OBJECT_MODEL
     )
