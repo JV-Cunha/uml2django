@@ -85,7 +85,20 @@ def start_django_project():
         # Parse code with RedBaron
         urls_node = RedBaron(source.read())
         source.close()
-    
+        
+    # get all imports in the file
+    django_urls_imports_nodes = urls_node.find_all("from_import")
+    for import_node in django_urls_imports_nodes:
+        if len(import_node.value) == 2:
+            import_full_name = []
+            for value in import_node.value:
+                import_full_name.append(str(value))
+            if ".".join(import_full_name) == "django.urls":
+                targets = [x.value for x in import_node.targets]
+                targets.append("include")
+                import_node.targets = ", ".join(targets)
+                
+        # import_node.help()
     # get url_patterns_nodes
     existing_url_patterns_nodes = urls_node.find("name", value="urlpatterns").parent.value
     # append already existed url_patterns
