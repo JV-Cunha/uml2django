@@ -12,8 +12,10 @@ def add_import_to_init_file(
     """
 
     already_has_import_statement = False
+    init_file_exists = False
     # If init file exists
     if file_exists(init_file_path):
+        init_file_exists = True
         # open with read permissions
         with open(init_file_path, "r") as init_file:
             # Check if import statement already exists in init_file
@@ -23,6 +25,7 @@ def add_import_to_init_file(
 
     if not already_has_import_statement:
         # open the file with append permissions
-        with open(init_file_path, "a") as init_file:
+        mode = "a" if init_file_exists else "w"
+        with open(init_file_path, mode) as init_file:
             init_file.write(import_statement)
             init_file.close()

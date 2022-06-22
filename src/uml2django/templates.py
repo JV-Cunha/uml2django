@@ -29,8 +29,14 @@ MODEL_UPDATE_FORM_TEMPLATE_PATH = getTemplatePath(
     "ModelUpdateForm.tmpl", "forms"
 )
 
-MODEL_SERIALIZER_TEMPLATE_PATH = getTemplatePath(
+REST_API_ROUTER_TEMPLATE_PATH = getTemplatePath(
+    "router.tmpl", "rest_api"
+)
+REST_API_MODEL_SERIALIZER_TEMPLATE_PATH = getTemplatePath(
     "ModelSerializer.tmpl", "rest_api"
+)
+REST_API_MODEL_VIEWSET_TEMPLATE_PATH = getTemplatePath(
+    "ModelViewSet.tmpl", "rest_api"
 )
 CREATE_VIEW_TEMPLATE_PATH = getViewsTemplatePath("CreateView.tmpl")
 DELETE_VIEW_TEMPLATE_PATH = getViewsTemplatePath("DeleteView.tmpl")

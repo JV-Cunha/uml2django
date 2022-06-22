@@ -18,7 +18,8 @@ from uml2django.XmiArgoUmlTagsNames import (
 )
 from uml2django import _logger
 from uml2django.processDocument import add_import_to_init_file
-from uml2django.processDocument.file_writer import file_writer
+from uml2django.processDocument.file_reader import file_reader
+from uml2django.processDocument.file_writer import append_target_to_from_import, file_writer
 from uml2django.processDocument.is_element_abstract import is_element_abstract
 
 from uml2django.processDocument.DjangoModelField import DjangoModelField
@@ -179,9 +180,8 @@ class DjangoModel():
         )
 
     def generate_cbv_urls_routing(self):
-        if not os.path.exists(self.app_path):
-            # create app path if not exists
-            Path(self.app_path).mkdir(parents=True, exist_ok=True)
+        # create app path if not exists
+        Path(self.app_path).mkdir(parents=True, exist_ok=True)
 
         for view_name in self.actions:
             cap_view_name = view_name.capitalize()
@@ -210,32 +210,38 @@ class DjangoModel():
         existing_url_patterns = []
         # If url file exists
         if os.path.exists(self.app_urls_file_path):
-            with open(self.app_urls_file_path, "r") as source:
-                # Parse code with RedBaron
-                urls_node = RedBaron(source.read())
-                existing_url_patterns_nodes = urls_node.find(
-                    "name", value="urlpatterns").parent.value
-                for existing_url_pattern in existing_url_patterns_nodes:
-                    urls_arary = str(existing_url_pattern)[
-                        5:-1].replace("\"", "").split(",")
-                    urls_arary[1] = urls_arary[1].replace(".as_view()", "")
-                    urls_arary[1] = urls_arary[1].replace(" ", "")
-                    urls_arary[2] = urls_arary[2].replace("name=", "")
-                    existing_url_patterns.append(urls_arary)
-
-        extended_urls_paths = []
-        extended_urls_paths = self.urls_paths + existing_url_patterns
-        app_urls_template = Template(
-            file=templates.getTemplatePath(
-                filename="urls.tmpl"
+            # Parse code with RedBaron
+            urls_node = RedBaron(file_reader(self.app_urls_file_path))
+            existing_url_patterns_nodes = urls_node.find(
+                "name", value="urlpatterns").parent.value
+            # existing_url_patterns_nodes.value = ["xx", "xxy"]
+            paths = [node.dumps() for node in existing_url_patterns_nodes]
+            for url_path in  self.urls_paths:
+                paths.append(f'path("{url_path[0]}", {url_path[1]}.as_view(), name="{url_path[2]}")')
+                
+            string_paths = ",\n\t".join(paths) 
+            string_paths = f"{string_paths}\n"
+            existing_url_patterns_nodes.value = string_paths
+            file_writer(self.app_urls_file_path, urls_node.dumps())
+            append_target_to_from_import(
+                self.app_urls_file_path,
+                f"{self.app_name}.views",
+                targets=[url[1] for url in self.urls_paths]
+                )
+            
+            # print(existing_url_patterns_nodes.dumps())
+            
+        else:
+            app_urls_template = Template(
+                file=templates.getTemplatePath(
+                    filename="urls.tmpl"
+                )
             )
-        )
-        app_urls_template.urls_paths = extended_urls_paths
-        app_urls_template.app_name = self.app_name
+            app_urls_template.settings = settings
+            app_urls_template.urls_paths = self.urls_paths
+            app_urls_template.app_name = self.app_name
 
-        with open(self.app_urls_file_path, "w") as app_urls_file:
-            app_urls_file.write(str(app_urls_template))
-            app_urls_file.close()
+            file_writer(self.app_urls_file_path, str(app_urls_template))
 
     def generate_model_python_file(self):
         django_model_template = Template(file=templates.MODEL_TEMPLATE_PATH)
@@ -253,11 +259,79 @@ class DjangoModel():
         )
 
     def generate_rest_api(self):
+        self.generate_rest_api_serializer()
+        self.generate_rest_api_viewset()
+        
+        # urls_node = RedBaron(
+        #     # Read app urls.py file
+        #     # Parse code with RedBaron
+        #     file_reader(self.app_urls_file_path)
+        # )
+        # url_patterns_nodes = urls_node.find(
+        #     "name", value="urlpatterns").parent.value
+        # existing_urls = [
+        #     # get already existed url_patterns
+        #     url_pattern_node.dumps() for url_pattern_node in url_patterns_nodes
+        # ]
+        # existing_urls.append("path('', include(router.urls))")
+        # url_patterns_nodes.value = ",\n\t".join(existing_urls) + "\n"
+        # file_writer(self.app_urls_file_path.dumps())
+        add_import_to_init_file(
+            self.app_rest_api_init_file_path,
+            ""
+        )
+
+    def generate_rest_api_viewset(self):
+        Path(
+            self.app_rest_api_views_path
+        ).mkdir(parents=True, exist_ok=True)
+        add_import_to_init_file(
+            self.app_rest_api_views_init_file_path,
+            f"from .{self.name}ViewSet import {self.name}ViewSet\n"
+        )
+        django_model_viewset_template = self.get_template_object(
+            template_path=templates.REST_API_MODEL_VIEWSET_TEMPLATE_PATH
+        )
+        file_writer(
+            file_path=self.app_rest_api_views_model_viewset_path,
+            content=(str(django_model_viewset_template))
+        )
+        if not os.path.exists(self.app_rest_api_router_path):
+            # if app router file not exists
+            # generate and write router file
+            router_template = self.get_template_object(
+                templates.REST_API_ROUTER_TEMPLATE_PATH
+            )
+            file_writer(self.app_rest_api_router_path, str(router_template))
+        else:
+            # if exists
+            # append modelviewset import import statement
+            append_target_to_from_import(
+                file_path=self.app_rest_api_router_path,
+                import_name=f"{self.app_name}.rest_api.views",
+                target=f"{self.name}ViewSet"
+            )
+            # append the router definition to router file
+            file_writer(
+                self.app_rest_api_router_path,
+                f"router.register(r'{self.name_lower.lower()}', {self.name}ViewSet)",
+                override=False
+            )
+
+    def generate_rest_api_serializer(self):
+        # create app/rest_api/serializers path
         Path(
             self.app_rest_api_serializers_path
         ).mkdir(parents=True, exist_ok=True)
+        # add to or create init file
+        # app/rest_api/serializers/__init__.py
+        add_import_to_init_file(
+            self.app_rest_api_serializers_init_file_path,
+            f"from .{self.name}Serializer import {self.name}Serializer\n"
+        )
+        
         django_model_serializer_template = self.get_template_object(
-            template_path=templates.MODEL_SERIALIZER_TEMPLATE_PATH
+            template_path=templates.REST_API_MODEL_SERIALIZER_TEMPLATE_PATH
         )
         file_writer(
             file_path=self.app_rest_api_serializers_model_serializer_path,
@@ -323,11 +397,29 @@ class DjangoModel():
             self.app_path,
             "rest_api"
         )
+        # app rest_api path
+        # example: some_django_app/rest_api/__init__.py
+        self.app_rest_api_init_file_path = os.path.join(
+            self.app_rest_api_path,
+            "__init__.py"
+        )
+        # app rest_api router path
+        # example: some_django_app/rest_api/router.py
+        self.app_rest_api_router_path = os.path.join(
+            self.app_rest_api_path,
+            "router.py"
+        )
         # app rest_api serializers path
         # example: some_django_app/rest_api/serializers
         self.app_rest_api_serializers_path = os.path.join(
             self.app_rest_api_path,
             "serializers"
+        )
+        # app rest_api serializers init file path
+        # example: some_django_app/rest_api/serializers/__init__.py
+        self.app_rest_api_serializers_init_file_path = os.path.join(
+            self.app_rest_api_serializers_path,
+            "__init__.py"
         )
         # app rest_api model serializer path
         # example: some_django_app/rest_api/serializers/SomeModelSerializer.py
@@ -335,6 +427,25 @@ class DjangoModel():
             self.app_rest_api_serializers_path,
             f"{self.name}Serializer.py"
         )
+        # app rest_api views path
+        # example: some_django_app/rest_api/views
+        self.app_rest_api_views_path = os.path.join(
+            self.app_rest_api_path,
+            "views"
+        )
+        # app rest_api views init file path
+        # example: some_django_app/rest_api/views/__init__.py
+        self.app_rest_api_views_init_file_path = os.path.join(
+            self.app_rest_api_views_path,
+            "__init__.py"
+        )
+        # app rest_api model viewset path
+        # example: some_django_app/rest_api/views/SomeModelViewSet.py
+        self.app_rest_api_views_model_viewset_path = os.path.join(
+            self.app_rest_api_views_path,
+            f"{self.name}ViewSet.py"
+        )
+
         # App Forms path
         # example: some_django_app/forms/
         self.app_forms_path = os.path.join(
