@@ -17,6 +17,7 @@ from uml2django.processDocument import (
 from uml2django.argparser import parse_args
 from uml2django.processDocument.DjangoModel import DjangoModel
 from uml2django.processDocument import get_django_models_from_minidom_document
+from uml2django.processDocument.generate_prepare_database import generate_prepare_database
 
 __author__ = "Joao Victor Soares da Cunha"
 __copyright__ = "Joao Victor Soares da Cunha"
@@ -40,6 +41,8 @@ def main(args: List[str]):
             django_model.generate_class_based_views()
             django_model.generate_cbv_urls_routing()
             django_model.generate_templates()
+    
+    generate_prepare_database()
     sys.exit(1)
 
 
