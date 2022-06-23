@@ -1,0 +1,10 @@
+import os
+from rest_framework import routers
+from ${model.app_name}.rest_api.views import ${model.name}ViewSet
+
+router = routers.DefaultRouter()
+router.register(
+    r'${model.name_lower}',
+    ${model.name}ViewSet,
+    basename="api-${model.name_lower}"
+)

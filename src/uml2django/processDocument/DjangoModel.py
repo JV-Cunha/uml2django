@@ -314,7 +314,7 @@ class DjangoModel():
             # append the router definition to router file
             file_writer(
                 self.app_rest_api_router_path,
-                f"router.register(r'{self.name_lower.lower()}', {self.name}ViewSet)",
+                f"router.register(\n\tr'{self.name_lower.lower()}',\n\t{self.name}ViewSet,\n\tbasename='api-{self.name_lower}'\n)",
                 override=False
             )
 

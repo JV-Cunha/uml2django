@@ -1,0 +1,10 @@
+from rest_framework import viewsets
+from rest_framework import permissions
+from ${model.app_name}.models import ${model.name}
+from ${model.app_name}.rest_api.serializers import ${model.name}Serializer
+
+
+class ${model.name}ViewSet(viewsets.ModelViewSet):
+    queryset = ${model.name}.objects.all()
+    serializer_class = ${model.name}Serializer
+    permission_classes = []
