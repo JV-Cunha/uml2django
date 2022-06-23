@@ -1,4 +1,5 @@
 from xml.dom import minidom
+from uml2django import _logger
 
 from uml2django.XmiArgoUmlTagsNames import XMI_ARGO_CLASS_TAG_NAME
 from uml2django.processDocument.DjangoModel import DjangoModel
@@ -27,4 +28,5 @@ def get_django_models_from_minidom_document(
                 # initialize DjangoModel
                 django_model = DjangoModel(class_element)
                 django_models.append(django_model)
+        _logger.debug(f"FOUND {len(django_models)} MODELS")
         return django_models

@@ -1,4 +1,5 @@
 from redbaron import RedBaron
+from uml2django import _logger
 from uml2django.processDocument.file_reader import file_reader
 
 
@@ -6,11 +7,16 @@ def append_target_to_from_import(
     file_path: str, import_name: str,
     target="", targets=[]
 ):
+    
     if not target and not targets:
         raise AttributeError("Must have an target to append")
+    # clean targets to avoid bugs
+    targets = [] if not targets else targets
     # append target to targets
     if target:
         targets.append(target)
+    
+    _logger.debug(f"APPENDING {targets} to {import_name}")
     # read file and parse to RedBaron object
     file_node = RedBaron(file_reader(file_path))
     # get all from import nodes

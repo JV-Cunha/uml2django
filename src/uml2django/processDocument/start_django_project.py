@@ -22,6 +22,7 @@ def start_django_project():
     _logger.debug("Created Django Project")
 
     # START APPS
+    _logger.debug(f"APPS_NAMES: {settings.UML2DJANGO_APPS_NAMES}")
     for app_name in settings.UML2DJANGO_APPS_NAMES:
         app_path = os.path.join(
             f"{settings.UML2DJANGO_OUTPUT_PATH}",
@@ -121,7 +122,7 @@ def start_django_project():
     #     )
     # append the include directive for each app_name
     for app_name in settings.UML2DJANGO_APPS_NAMES:
-        existing_urls.append(f"path('', include('{app_name}.urls'))")
+        existing_urls.append(f"path('{app_name}/', include('{app_name}.urls'))")
         
 
     # Set the urls_patterns nodes value

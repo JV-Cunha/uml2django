@@ -104,7 +104,7 @@ class DjangoModel():
         Path(self.model_templates_path).mkdir(parents=True, exist_ok=True)
         for action in self.actions:
             t = Template(
-                file=templates.getTemplatePath(
+                file=templates.getAppTemplatePath(
                     directory="templates",
                     filename=f"template_{action}.tmpl"
                 )
@@ -126,7 +126,7 @@ class DjangoModel():
             cap_view_name = view_name.capitalize()
             # generate view from template for each action
             t = Template(
-                file=templates.getTemplatePath(
+                file=templates.getAppTemplatePath(
                     directory="views",
                     filename=f"{cap_view_name}View.tmpl"
                 )
@@ -154,7 +154,7 @@ class DjangoModel():
         # Generate tests
         Path(self.model_tests_path).mkdir(parents=True, exist_ok=True)
         model_views_test_template = Template(
-            file=templates.getTemplatePath(
+            file=templates.getAppTemplatePath(
                 directory="tests",
                 filename=f"ModelViewsTest.tmpl"
             )
@@ -233,7 +233,7 @@ class DjangoModel():
             
         else:
             app_urls_template = Template(
-                file=templates.getTemplatePath(
+                file=templates.getAppTemplatePath(
                     filename="urls.tmpl"
                 )
             )
