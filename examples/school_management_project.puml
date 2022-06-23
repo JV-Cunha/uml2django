@@ -1,0 +1,41 @@
+@startuml
+left to right direction
+package people {
+    abstract class AbstractPerson {
+        {field} -first_name : CharField(max_length=255)
+        {field} -last_name : CharField(max_length=255)
+    }
+
+    class Student {
+        {field} ufrrj_id : CharField()
+    }
+    AbstractPerson <- Student : inherit
+
+    class Instructor {
+        {field} ufrrj_id : PositiveIntegerField()
+    }
+    AbstractPerson <- Instructor : inherit
+}
+package educational {
+    class Subject {
+        {field} title : CharField(max_length=255)
+    }
+    class SubjectClass {
+        {field} title : CharField(max_length=255)
+    }
+}
+package infrastructure {
+    class Building {
+        {field} title : CharField(max_length=255)
+    }
+    class ClassRoom {
+        {field} building : ForeignKey('Building')
+        {field} title : CharField(max_length=255)
+    }
+    class WorkingPeriod {
+        {field} day_of_week : CharField(max_length=255)
+        {field} from_hour : TimeField()
+        {field} to_time : TimeField()
+    }
+}
+@enduml
