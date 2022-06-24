@@ -1,11 +1,27 @@
 import os
 import django
+
 from django.core import management
 from django.core.management.commands import makemigrations, migrate
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'test_project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', '${project_name}.settings')
 django.setup()
 
 management.call_command(makemigrations.Command())
 management.call_command(migrate.Command())
+
+from model_bakery import baker
+#for $model in $models
+#if not $model.is_abstract
+from ${model.app_name}.models import $model.name
+#end if
+#end for
+
+#for $model in $models
+#if not $model.is_abstract
+$model.name_lower = baker.make($model.name)
+#end if
+#end for
+
+
