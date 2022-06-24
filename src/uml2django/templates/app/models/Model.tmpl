@@ -34,6 +34,13 @@ class ${model.name}(
         #if $model.is_abstract
         abstract = True
         #end if
+        #if $model.unique_together_fields
+        unique_together = (
+            #for $field in $model.unique_together_fields
+            '$field',
+            #end for
+        )
+        #end if
 
     # def __str__(self): 
     #     return self.

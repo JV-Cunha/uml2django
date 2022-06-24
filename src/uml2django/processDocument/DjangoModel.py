@@ -19,6 +19,7 @@ from uml2django import _logger
 from uml2django.processDocument import add_import_to_init_file
 from uml2django.processDocument.file_reader import file_reader
 from uml2django.processDocument.file_writer import append_target_to_from_import, file_writer
+from uml2django.processDocument.get_substring_between_parenthesis import get_sub_string_between_parenthesis
 from uml2django.processDocument.is_element_abstract import is_element_abstract
 
 from uml2django.processDocument.DjangoModelField import DjangoModelField
@@ -36,6 +37,7 @@ class DjangoModel():
     is_abstract = False
     use_slug = False
     slugify_field = ""
+    unique_together_fields = []
 
     actions = [
         'create', 'delete', 'detail',
@@ -73,11 +75,15 @@ class DjangoModel():
                        for stereo_types_element in stereo_types_elements]
         # _logger.debug(f"XMI_ARGO_STEREOTYPE_TAG_NAME: {stereo_types_elements}")
         for stereotype in stereotypes:
+            # check if should use slug field
             if stereotype.startswith("use_slug"):
                 self.use_slug = True
-                self.slugify_field = stereotype[stereotype.find(
-                    "(")+1:stereotype.find(")")]
+                self.slugify_field = get_sub_string_between_parenthesis(stereotype)
+            if stereotype.startswith("unique_together"):
+                self.unique_together_fields = get_sub_string_between_parenthesis(stereotype).split(",")
+            # if stereotype.startswith("str"):
             _logger.debug(f"USE_SLUG:: {self.use_slug}")
+        
 
     def add_base_father(self, django_model):
         self.base_fathers.append(django_model)
