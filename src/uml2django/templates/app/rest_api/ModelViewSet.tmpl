@@ -7,4 +7,7 @@ from ${model.app_name}.rest_api.serializers import ${model.name}Serializer
 class ${model.name}ViewSet(viewsets.ModelViewSet):
     queryset = ${model.name}.objects.all()
     serializer_class = ${model.name}Serializer
-    permission_classes = []
+    permission_classes = [] 
+    #if $model.use_slug
+    lookup_field = 'slug'
+    #end if

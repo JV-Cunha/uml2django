@@ -24,6 +24,10 @@ class ${model.name}(
     )
     #end for
 
+    #if $model.use_slug
+    slug = models.SlugField(null=False, unique=True) 
+    #end if
+
     class Meta:
         verbose_name = _("${model.name_lower}")
         verbose_name_plural = _("${model.name_plural.lower()}")

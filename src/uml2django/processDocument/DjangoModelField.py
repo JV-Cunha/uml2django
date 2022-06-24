@@ -10,16 +10,21 @@ class DjangoModelField():
     field_type = None
     field_options = None
     visibility = None
+    unique = False
 
     def __init__(self, element: minidom.Element = None):
         if not element:
             _logger.debug("An element must be given")
             sys.exit(1)
         self.element = element
+        visibility_attr = element.attributes.get("visibility")
+        if visibility_attr:
+            if visibility_attr.value == "protected":
+                self.unique = True
+                _logger.debug(f"{self.name} UNIQUE ")
         self.set_name_from_element()
         self.fillNameAndFieldType()
-        self.visibility = element.attributes.get("visibility")
-       
+
 
     def __str__(self) -> str:
         return f"{self.name} - {self.field_type}"
@@ -57,6 +62,8 @@ class DjangoModelField():
         has_help_text = False
         char_field_has_max_length = False
         foreign_key_has_on_delete = False
+        foreign_key_has_related_name = False
+        foreign_key_has_related_query_name = False
         # loop through field options and values
         for field_option in self.field_options:
             # if field options is 'verbose_name'
@@ -70,11 +77,19 @@ class DjangoModelField():
                 # check if have a 'max_length' option
                 char_field_has_max_length = True if field_option.startswith(
                     "max_length") else False
+        
 
             if self.field_type == "ForeignKey":
                 foreign_key_has_on_delete = True if field_option.startswith(
                     "on_delete") else False
-
+                foreign_key_has_related_name = True if field_option.startswith(
+                    "related_name") else False
+                foreign_key_has_related_query_name = True if field_option.startswith(
+                    "related_query_name") else False
+        
+        if self.unique:
+            self.field_options.append("unique=True")
+            
         if not has_verbose_name:
             verbose_name = " ".join(self.name.split("_"))
             self.field_options.append(f"verbose_name=_('{verbose_name}')")
@@ -90,4 +105,11 @@ class DjangoModelField():
 
         if self.field_type == "ForeignKey" and not foreign_key_has_on_delete:
             self.field_options.append(
-                f"on_delete={settings.UML2DJANGO_FOREIGNKEY_ON_DELETE}")
+                f"on_delete={settings.UML2DJANGO_FOREIGNKEY_ON_DELETE}"
+            )
+        
+        
+        # if self.field_type == "ForeignKey" and not foreign_key_has_related_name:
+        #     # self.field_options.append(
+        #         # f"related_name={}"
+        #     # )

@@ -13,8 +13,7 @@ from uml2django import templates
 from uml2django import settings
 from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_ATTRIBUTE_TAG_NAME,
-    XMI_ARGO_CLASS_ABSTRACT_ATTRIBUTE,
-    XMI_ARGO_CLASS_TAG_NAME
+    XMI_ARGO_STEREOTYPE_TAG_NAME
 )
 from uml2django import _logger
 from uml2django.processDocument import add_import_to_init_file
@@ -35,6 +34,8 @@ class DjangoModel():
     views_path = str()
     urls_paths = []
     is_abstract = False
+    use_slug = False
+    slugify_field = ""
 
     actions = [
         'create', 'delete', 'detail',
@@ -48,20 +49,35 @@ class DjangoModel():
             )
             sys.exit(1)
         self.element = element
-        self.setNamesFromElement()
-        self.app_name = element.attributes.get("namespace").value
         self.xmi_id = element.attributes.get("xmi.id").value
         self.is_abstract = is_element_abstract(self.element)
+        self.setNamesFromElement()
+        self.process_stereotypes()
         self.setFieldsFromElement()
         self.setPaths()
         self.urls_paths = []
         self.base_fathers = []
 
+        # append appname if not in global apps names
         if self.app_name not in settings.UML2DJANGO_APPS_NAMES:
             settings.UML2DJANGO_APPS_NAMES.append(self.app_name)
 
     def __str__(self) -> str:
         return self.name
+
+    def process_stereotypes(self):
+        stereo_types_elements = self.element.getElementsByTagName(
+            XMI_ARGO_STEREOTYPE_TAG_NAME
+        )
+        stereotypes = [str(stereo_types_element.getAttribute("name"))
+                       for stereo_types_element in stereo_types_elements]
+        # _logger.debug(f"XMI_ARGO_STEREOTYPE_TAG_NAME: {stereo_types_elements}")
+        for stereotype in stereotypes:
+            if stereotype.startswith("use_slug"):
+                self.use_slug = True
+                self.slugify_field = stereotype[stereotype.find(
+                    "(")+1:stereotype.find(")")]
+            _logger.debug(f"USE_SLUG:: {self.use_slug}")
 
     def add_base_father(self, django_model):
         self.base_fathers.append(django_model)
@@ -216,10 +232,11 @@ class DjangoModel():
                 "name", value="urlpatterns").parent.value
             # existing_url_patterns_nodes.value = ["xx", "xxy"]
             paths = [node.dumps() for node in existing_url_patterns_nodes]
-            for url_path in  self.urls_paths:
-                paths.append(f'path("{url_path[0]}", {url_path[1]}.as_view(), name="{url_path[2]}")')
-                
-            string_paths = ",\n\t".join(paths) 
+            for url_path in self.urls_paths:
+                paths.append(
+                    f'path("{url_path[0]}", {url_path[1]}.as_view(), name="{url_path[2]}")')
+
+            string_paths = ",\n\t".join(paths)
             string_paths = f"{string_paths}\n"
             existing_url_patterns_nodes.value = string_paths
             file_writer(self.app_urls_file_path, urls_node.dumps())
@@ -227,10 +244,10 @@ class DjangoModel():
                 self.app_urls_file_path,
                 f"{self.app_name}.views",
                 targets=[url[1] for url in self.urls_paths]
-                )
-            
+            )
+
             # print(existing_url_patterns_nodes.dumps())
-            
+
         else:
             app_urls_template = Template(
                 file=templates.getAppTemplatePath(
@@ -261,7 +278,7 @@ class DjangoModel():
     def generate_rest_api(self):
         self.generate_rest_api_serializer()
         self.generate_rest_api_viewset()
-        
+
         # urls_node = RedBaron(
         #     # Read app urls.py file
         #     # Parse code with RedBaron
@@ -329,7 +346,7 @@ class DjangoModel():
             self.app_rest_api_serializers_init_file_path,
             f"from .{self.name}Serializer import {self.name}Serializer\n"
         )
-        
+
         django_model_serializer_template = self.get_template_object(
             template_path=templates.REST_API_MODEL_SERIALIZER_TEMPLATE_PATH
         )
@@ -345,10 +362,12 @@ class DjangoModel():
         return template_obj
 
     def setNamesFromElement(self):
-        self.name = self.element.attributes.get(
-            "name"
-        ).value.capitalize()
+        self.app_name = self.element.attributes.get("namespace").value
+        self.name = str(
+            self.element.attributes.get(
+                "name").value)
         self.name_lower = self.name.lower()
+        # use the inflect package to get pluralization
         self.name_plural = inflect.engine().plural(self.name)
         return self.name
 
