@@ -161,8 +161,11 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     settings.DJANGO_MODELS = get_django_models_from_minidom_document(
         settings.DOCUMENT_OBJECT_MODEL
     )
+    settings.DJANGO_MODELS_NAMES = [model.name for model in settings.DJANGO_MODELS]
+    # need to process after all models initialization
+    for django_model in settings.DJANGO_MODELS:
+        django_model.process_operations()
+    # need to load associations after all models initialization
     load_associations()
-
-    
 
     return parsed_args

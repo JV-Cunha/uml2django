@@ -69,38 +69,42 @@ class DjangoModel():
     def __str__(self) -> str:
         return self.name
 
-    def process_stereotypes(self):
+    def process_operations(self):
         operation_elements = self.element.getElementsByTagName(
             XMI_ARGO_OPERATION_TAG_NAME
         )
         operations = [str(opration_element.getAttribute("name"))
-                       for opration_element in operation_elements]
+                      for opration_element in operation_elements]
         # _logger.debug(f"XMI_ARGO_STEREOTYPE_TAG_NAME: {operation_elements}")
         for operation in operations:
             # check if should use slug field
             if operation.startswith("use_slug"):
                 self.use_slug = True
-                self.slugify_field = get_sub_string_between_parenthesis(operation)
+                self.slugify_field = get_sub_string_between_parenthesis(
+                    operation)
                 _logger.debug(f"USE_SLUG:: {self.use_slug}")
             # check if have unique together fields
             if operation.startswith("unique_together"):
-                self.unique_together_fields = get_sub_string_between_parenthesis(operation).split(",")
+                self.unique_together_fields = get_sub_string_between_parenthesis(
+                    operation).split(",")
             if operation.startswith("rest_api_writable_nested_objects"):
-                objects_list = get_sub_string_between_parenthesis(operation).split(",")
+                objects_list = get_sub_string_between_parenthesis(
+                    operation).split(",")
                 for object_name in objects_list:
                     if object_name not in settings.DJANGO_MODELS_NAMES:
                         raise AttributeError(
                             f"rest_api_writable_nested_objects: Object {object_name} not found"
                         )
-                    django_model = [dj_m for dj_m in settings.DJANGO_MODELS if dj_m.name == object_name]
-                    
+                    django_model = [
+                        dj_m for dj_m in settings.DJANGO_MODELS if dj_m.name == object_name]
+
                     if len(django_model) > 1:
                         raise AttributeError(
                             f"rest_api_writable_nested_objects: Object {object_name} is duplcated, models must have unique names"
                         )
 
-                    self.rest_api_writable_nested_objects.append(django_model[0])
-        
+                    self.rest_api_writable_nested_objects.append(
+                        django_model[0])
 
     def add_base_father(self, django_model):
         self.base_fathers.append(django_model)
@@ -217,11 +221,8 @@ class DjangoModel():
             self.app_tests_init_file_path,
             f"from .{self.name_lower} import {self.name}ViewsTest\n"
         )
-
-    def generate_cbv_urls_routing(self):
-        # create app path if not exists
-        Path(self.app_path).mkdir(parents=True, exist_ok=True)
-
+        
+        # append views to model urls_paths
         for view_name in self.actions:
             cap_view_name = view_name.capitalize()
             # append view path to self.urls_paths list
@@ -246,6 +247,9 @@ class DjangoModel():
                     f"{self.name_lower}-{view_name}"
                 ))
 
+    def generate_cbv_urls_routing(self):
+        # create app path if not exists
+        Path(self.app_path).mkdir(parents=True, exist_ok=True)
         existing_url_patterns = []
         # If url file exists
         if os.path.exists(self.app_urls_file_path):
@@ -253,7 +257,6 @@ class DjangoModel():
             urls_node = RedBaron(file_reader(self.app_urls_file_path))
             existing_url_patterns_nodes = urls_node.find(
                 "name", value="urlpatterns").parent.value
-            # existing_url_patterns_nodes.value = ["xx", "xxy"]
             paths = [node.dumps() for node in existing_url_patterns_nodes]
             for url_path in self.urls_paths:
                 paths.append(
@@ -263,15 +266,17 @@ class DjangoModel():
             string_paths = f"{string_paths}\n"
             existing_url_patterns_nodes.value = string_paths
             file_writer(self.app_urls_file_path, urls_node.dumps())
-            append_target_to_from_import(
-                self.app_urls_file_path,
-                f"{self.app_name}.views",
-                targets=[url[1] for url in self.urls_paths]
-            )
+            if self.urls_paths:
+                append_target_to_from_import(
+                    self.app_urls_file_path,
+                    f"{self.app_name}.views",
+                    targets=[url[1] for url in self.urls_paths]
+                )
 
             # print(existing_url_patterns_nodes.dumps())
 
         else:
+            # if urls.py file not exists
             app_urls_template = Template(
                 file=templates.getAppTemplatePath(
                     filename="urls.tmpl"
