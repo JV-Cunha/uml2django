@@ -13,6 +13,7 @@ from uml2django import templates
 from uml2django import settings
 from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_ATTRIBUTE_TAG_NAME,
+    XMI_ARGO_OPERATION_TAG_NAME,
     XMI_ARGO_STEREOTYPE_TAG_NAME
 )
 from uml2django import _logger
@@ -38,6 +39,7 @@ class DjangoModel():
     use_slug = False
     slugify_field = ""
     unique_together_fields = []
+    rest_api_writable_nested_objects = []
 
     actions = [
         'create', 'delete', 'detail',
@@ -54,11 +56,11 @@ class DjangoModel():
         self.xmi_id = element.attributes.get("xmi.id").value
         self.is_abstract = is_element_abstract(self.element)
         self.setNamesFromElement()
-        self.process_stereotypes()
         self.setFieldsFromElement()
         self.setPaths()
         self.urls_paths = []
         self.base_fathers = []
+        self.rest_api_writable_nested_objects = []
 
         # append appname if not in global apps names
         if self.app_name not in settings.UML2DJANGO_APPS_NAMES:
@@ -68,21 +70,36 @@ class DjangoModel():
         return self.name
 
     def process_stereotypes(self):
-        stereo_types_elements = self.element.getElementsByTagName(
-            XMI_ARGO_STEREOTYPE_TAG_NAME
+        operation_elements = self.element.getElementsByTagName(
+            XMI_ARGO_OPERATION_TAG_NAME
         )
-        stereotypes = [str(stereo_types_element.getAttribute("name"))
-                       for stereo_types_element in stereo_types_elements]
-        # _logger.debug(f"XMI_ARGO_STEREOTYPE_TAG_NAME: {stereo_types_elements}")
-        for stereotype in stereotypes:
+        operations = [str(opration_element.getAttribute("name"))
+                       for opration_element in operation_elements]
+        # _logger.debug(f"XMI_ARGO_STEREOTYPE_TAG_NAME: {operation_elements}")
+        for operation in operations:
             # check if should use slug field
-            if stereotype.startswith("use_slug"):
+            if operation.startswith("use_slug"):
                 self.use_slug = True
-                self.slugify_field = get_sub_string_between_parenthesis(stereotype)
-            if stereotype.startswith("unique_together"):
-                self.unique_together_fields = get_sub_string_between_parenthesis(stereotype).split(",")
-            # if stereotype.startswith("str"):
-            _logger.debug(f"USE_SLUG:: {self.use_slug}")
+                self.slugify_field = get_sub_string_between_parenthesis(operation)
+                _logger.debug(f"USE_SLUG:: {self.use_slug}")
+            # check if have unique together fields
+            if operation.startswith("unique_together"):
+                self.unique_together_fields = get_sub_string_between_parenthesis(operation).split(",")
+            if operation.startswith("rest_api_writable_nested_objects"):
+                objects_list = get_sub_string_between_parenthesis(operation).split(",")
+                for object_name in objects_list:
+                    if object_name not in settings.DJANGO_MODELS_NAMES:
+                        raise AttributeError(
+                            f"rest_api_writable_nested_objects: Object {object_name} not found"
+                        )
+                    django_model = [dj_m for dj_m in settings.DJANGO_MODELS if dj_m.name == object_name]
+                    
+                    if len(django_model) > 1:
+                        raise AttributeError(
+                            f"rest_api_writable_nested_objects: Object {object_name} is duplcated, models must have unique names"
+                        )
+
+                    self.rest_api_writable_nested_objects.append(django_model[0])
         
 
     def add_base_father(self, django_model):
@@ -375,6 +392,7 @@ class DjangoModel():
         self.name_lower = self.name.lower()
         # use the inflect package to get pluralization
         self.name_plural = inflect.engine().plural(self.name)
+        self.name_plural_lower = self.name_plural.lower()
         return self.name
 
     def setFieldsFromElement(self):

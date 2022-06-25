@@ -8,17 +8,35 @@ from django.utils.text import slugify
 from rest_framework import serializers
 
 from ${model.app_name}.models import ${model.name}
+#for $nested_object in $model.rest_api_writable_nested_objects
+from ${nested_object.app_name}.models.${nested_object.name} import ${nested_object.name}
+#end for
+
+#for $nested_object in $model.rest_api_writable_nested_objects
+from ${nested_object.app_name}.rest_api.serializers.${nested_object.name}Serializer import ${nested_object.name}Serializer
+#end for
+
 
 class ${model.name}Serializer(serializers.ModelSerializer):
+    #for $nested_object in $model.rest_api_writable_nested_objects
+    ${nested_object.name_lower}_set = ${$nested_object}Serializer(
+        # source='${$nested_object.name_lower}_set',
+        many=True
+    )
+    #end for
+    
 
     class Meta:
         model = ${model.name}
         fields = [
             #for $field in $model.fields
             '${field.name}',
+            #end for
             #if $model.use_slug
             'slug',
             #end if
+            #for $nested_object in $model.rest_api_writable_nested_objects
+            '${nested_object.name_lower}_set',
             #end for
         ]
         #if $model.use_slug
@@ -29,10 +47,23 @@ class ${model.name}Serializer(serializers.ModelSerializer):
         }
         #end if
 
-    #if $model.use_slug
+    #if $model.use_slug or $model.rest_api_writable_nested_objects
     def create(self, validated_data):
+        #for $nested_model in $model.rest_api_writable_nested_objects
+        ${nested_model.name_lower}_set_data = validated_data.pop('${nested_model.name_lower}_set')
+        #end for
         ${model.name_lower} = ${model.name}(**validated_data)
+        #for $nested_model in $model.rest_api_writable_nested_objects
+        for ${nested_model.name_lower}_data in ${nested_model.name_lower}_set_data:
+            ${nested_model.name}.objects.create(
+                ${model.name_lower}=${model.name_lower},
+                **${nested_model.name_lower}_data
+            )
+        #end for
+
+        #if $model.use_slug
         ${model.name_lower}.slug = slugify(${model.name_lower}.${model.slugify_field})
+        #end if
         ${model.name_lower}.save()
         return ${model.name_lower}
     #end if
