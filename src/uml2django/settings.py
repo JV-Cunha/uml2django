@@ -8,6 +8,7 @@ class settings:
 
     UML2DJANGO_GENERATE_DJANGO_PROJECT = True
     UML2DJANGO_GENERATE_DJANGO_INSTALLED_APPS_REQUIREMENTS = [
+        "corsheaders",
         "rest_framework",
         "crispy_forms"
     ]
