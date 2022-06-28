@@ -1,10 +1,10 @@
 ==========
 uml2django
 ==========
-.. image:: https://pypip.in/version/uml2django/badge.svg
-    :target: https://pypi.python.org/pypi/uml2django/
-    :alt: PyPi Latest Version
-
+.. image:: https://badge.fury.io/py/uml2django.svg
+    :target: https://badge.fury.io/py/uml2django
+    :alt: PyPi
+    
 uml2django is a tool for generate `Django <https://www.djangoproject.com/>`_ code from `PlantUML class diagrams <https://plantuml.com/class-diagram>`_.
 It able to generate: 
 
