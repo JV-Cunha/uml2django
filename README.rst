@@ -98,7 +98,8 @@ It able to generate:
 **Models Inheritance**
 ----------------------
     
-* `Meta inheritance <https://docs.djangoproject.com/en/4.0/topics/db/models/#abstract-base-classes>`__ ::
+* `Meta inheritance <https://docs.djangoproject.com/en/4.0/topics/db/models/#abstract-base-classes>`__ 
+To define an Meta inheritance the base model must use the plantuml ``abstract`` keyword ::
 
     @startuml
         package exampledjangoapp {
@@ -141,3 +142,11 @@ It able to generate:
             }
         }
     @enduml
+
+**Models Options**
+------------------
+You can inform some options that will change the behavior of the model and the code generated for it.
+
+* use_slug(SOME_FIELD)
+* unique_together(field_1,field_2,...,field_N)
+* rest_api_writable_nested_objects(Model_1, Model_2, ..., Model_N)
