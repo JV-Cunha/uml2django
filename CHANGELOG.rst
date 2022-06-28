@@ -5,7 +5,8 @@ Changelog
 Version 0.0.7
 =============
 
-**Generate the following native Django code from plantuml file: **
+**Generate Django Code **
+-------------------------
 - Models
     - Support abstract models and inheritance.
     - Support the use of slug field as lookup field.
@@ -16,7 +17,8 @@ Version 0.0.7
 - Tests
 - Urls routing
 
-**Generate the following Django Rest Framework code:**
+**Generate Django Rest Framework Code**
+---------------------------------------
 - Serializers
     - Support writable nested serializers
 - APIViews
