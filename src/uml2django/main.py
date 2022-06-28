@@ -9,7 +9,7 @@ import os
 import sys
 from typing import List
 from uml2django import _logger, settings
-
+from uml2django import objects
 from uml2django.argparser import parse_args
 from uml2django.objects.DjangoModel import DjangoModel
 from uml2django.parsers.django.configure_corsheaders import configure_corsheaders
@@ -30,7 +30,7 @@ def main(args: List[str]):
     if settings.UML2DJANGO_GENERATE_DJANGO_PROJECT:
         start_django_project()
     
-    for django_model in settings.DJANGO_MODELS:
+    for django_model in objects.DJANGO_MODELS:
         django_model.generate_model_python_file()
         if not django_model.is_abstract:
             django_model.generate_rest_api()

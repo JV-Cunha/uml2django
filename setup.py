@@ -2,7 +2,7 @@
     Setup file for uml2django.
     Use setup.cfg to configure your project.
 """
-from setuptools import setup
+from setuptools import find_packages, setup
 
 if __name__ == "__main__":
     try:

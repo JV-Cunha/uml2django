@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "uml2django"
-version = "0.0.5"
+version = "0.0.8"
 description = "Generate Django code from PlantUML class diagrams."
 readme = "README.rst"
 authors = [
@@ -22,22 +22,33 @@ classifiers = [
     "Framework :: Django",
     "Intended Audience :: Developers",
     "License :: Public Domain",
-    "Operating System :: POSIX :: Linux",
+    "Operating System :: OS Independent",
     "Topic :: Software Development :: Code Generators",
 ]
 # keywords = ["feed", "reader", "tutorial"]
+requires-python = ">=3.8"
 dependencies = [
     "cheetah3",
     "inflect",
     "redbaron",
 ]
-requires-python = ">=3.8.10"
+
+[project.optional-dependencies]
+dev = [
+    "tox",
+]
+
 
 [project.urls]
 Homepage = "https://github.com/j-hanks/uml2django"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+# exclude = ["tests", "docs"] 
+
+[tool.setuptools]
+
+
 
 [project.scripts] 
 uml2django = "uml2django.main:run"

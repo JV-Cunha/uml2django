@@ -10,7 +10,7 @@ from redbaron import RedBaron
 import inflect
 
 
-from uml2django import templates
+from uml2django import objects, templates
 from uml2django.settings import settings
 from uml2django.parsers.xmi.XmiArgoUmlTagsNames import (
     XMI_ARGO_ATTRIBUTE_TAG_NAME,
@@ -65,8 +65,8 @@ class DjangoModel():
         self.rest_api_writable_nested_objects = []
 
         # append appname if not in global apps names
-        if self.app_name not in settings.UML2DJANGO_APPS_NAMES:
-            settings.UML2DJANGO_APPS_NAMES.append(self.app_name)
+        if self.app_name not in objects.UML2DJANGO_APPS_NAMES:
+            objects.UML2DJANGO_APPS_NAMES.append(self.app_name)
 
     def __str__(self) -> str:
         return self.name
@@ -93,12 +93,12 @@ class DjangoModel():
                 objects_list = get_sub_string_between_parenthesis(
                     operation).split(",")
                 for object_name in objects_list:
-                    if object_name not in settings.DJANGO_MODELS_NAMES:
+                    if object_name not in objects.DJANGO_MODELS_NAMES:
                         raise AttributeError(
                             f"rest_api_writable_nested_objects: Object {object_name} not found"
                         )
                     django_model = [
-                        dj_m for dj_m in settings.DJANGO_MODELS if dj_m.name == object_name]
+                        dj_m for dj_m in objects.DJANGO_MODELS if dj_m.name == object_name]
 
                     if len(django_model) > 1:
                         raise AttributeError(

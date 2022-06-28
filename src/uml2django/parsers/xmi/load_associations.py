@@ -36,6 +36,7 @@ def load_associations():
                 association_class_element_xmi_id = get_xmi_id_of_element(
                     association_class_element
                 )
+                
                 model = find_loaded_django_model_by_xmi_id(
                     association_class_element_xmi_id
                 )
@@ -44,8 +45,6 @@ def load_associations():
                 )
             
             logging.getLogger(__name__).debug(f"associated models: {[str(model) for model in associated_models]}")
-            abstract_model = None
-            not_abstract_model = None
             base_model = associated_models[0]
             extended_model = associated_models[1]
             extended_model.add_base_father(base_model)
