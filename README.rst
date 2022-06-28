@@ -47,6 +47,7 @@ It able to generate:
             django_model.generate_class_based_views()
             django_model.generate_cbv_urls_routing()
             django_model.generate_templates()
+
 **Syntax**
 ==========
 
