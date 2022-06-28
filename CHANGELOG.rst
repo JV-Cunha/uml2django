@@ -5,8 +5,8 @@ Changelog
 Version 0.0.7
 =============
 
-**Generate Django Code **
--------------------------
+**Generate Django Code**
+------------------------
 - Models
     - Support abstract models and inheritance.
     - Support the use of slug field as lookup field.
