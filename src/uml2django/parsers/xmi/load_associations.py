@@ -3,9 +3,9 @@ from uml2django import _logger
 from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_ASSOCIATION_TAG_NAME, XMI_ARGO_CLASS_TAG_NAME
 )
-from uml2django.processDocument.find_django_model_by_xmi_id import find_django_model_by_xmi_id
-from uml2django.processDocument.get_xmi_association_name import get_xmi_association_name
-from uml2django.processDocument.get_xmi_id_of_element import get_xmi_id_of_element
+from uml2django.parsers.settings.find_loaded_django_model_by_xmi_id import find_loaded_django_model_by_xmi_id
+from uml2django.parsers.xmi.get_name_of_element import get_name_from_element
+from uml2django.parsers.xmi.get_xmi_id_of_element import get_xmi_id_of_element
 
 
 def load_associations():
@@ -18,7 +18,7 @@ def load_associations():
     # loop through each association element
     for association_element in association_elements:
         # get association name attribute
-        association_name = get_xmi_association_name(association_element)
+        association_name = get_name_from_element(association_element)
         
         # if is an inheritance
         if association_name == "inherit":
@@ -36,7 +36,7 @@ def load_associations():
                 association_class_element_xmi_id = get_xmi_id_of_element(
                     association_class_element
                 )
-                model = find_django_model_by_xmi_id(
+                model = find_loaded_django_model_by_xmi_id(
                     association_class_element_xmi_id
                 )
                 associated_models.append(

@@ -12,15 +12,12 @@ from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_ASSOCIATION_TAG_NAME,
     XMI_ARGO_CLASS_TAG_NAME
 )
-from uml2django.processDocument import (
-    find_django_model_by_xmi_id,
-    generate_xmi_from_puml,
-    get_django_models_from_minidom_document,
-    load_associations,
-    read_xmi_file
-)
-from uml2django.processDocument import get_xmi_association_name
-from uml2django.processDocument import get_xmi_id_of_element
+from uml2django.parsers.files.load_data_from_puml_or_xmi import load_data_from_puml_or_xmi
+
+from uml2django.parsers.xmi.load_associations import load_associations
+from uml2django.parsers.xmi.generate_xmi_from_puml import generate_xmi_from_puml
+from uml2django.parsers.xmi.get_django_models_from_xmi_document import get_django_models_from_xmi_document
+from uml2django.parsers.xmi.read_xmi_file import read_xmi_file
 
 
 def is_valid_file(parser: argparse.ArgumentParser, arg: str) -> str:
@@ -125,7 +122,7 @@ def parse_args(args: List[str]) -> argparse.Namespace:
 
     parsed_args = parser.parse_args(args)
     setup_logging(parsed_args.loglevel)
-    
+
     # Configure Output Path
     if parsed_args.output_path:
         settings.UML2DJANGO_OUTPUT_PATH = parsed_args.output_path
@@ -152,20 +149,9 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     if (parsed_args.xmi_file and parsed_args.puml_file):
         parser.error('You should inform --xmi or --puml')
     # if not xmi_file informed, generate from plantuml file
-    if parsed_args.xmi_file is None:
-        xmi_filename = generate_xmi_from_puml(parsed_args.puml_file)
-    settings.UML2DJANGO_PROJECT_NAME = xmi_filename[:-4].split("/")[-1]
-    _logger.debug(f"PROJECT_NAME: {settings.UML2DJANGO_PROJECT_NAME}")
-    settings.DOCUMENT_OBJECT_MODEL = read_xmi_file(xmi_filename)
-    
-    settings.DJANGO_MODELS = get_django_models_from_minidom_document(
-        settings.DOCUMENT_OBJECT_MODEL
+    load_data_from_puml_or_xmi(
+        plantuml_file_path=parsed_args.puml_file,
+        xmi_file_path=parsed_args.xmi_file
     )
-    settings.DJANGO_MODELS_NAMES = [model.name for model in settings.DJANGO_MODELS]
-    # need to process after all models initialization
-    for django_model in settings.DJANGO_MODELS:
-        django_model.process_operations()
-    # need to load associations after all models initialization
-    load_associations()
 
     return parsed_args

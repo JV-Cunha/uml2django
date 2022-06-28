@@ -2,7 +2,7 @@ import os
 from Cheetah.Template import Template
 from uml2django import settings, templates
 
-from uml2django.processDocument.file_writer import file_writer
+from uml2django.parsers.files.file_writer import file_writer
 
 
 def generate_prepare_database():

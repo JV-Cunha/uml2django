@@ -1,10 +1,10 @@
 
 from uml2django import  settings
 from uml2django import _logger
-from uml2django.processDocument import DjangoModel
+from uml2django.objects import DjangoModel
 
 
-def find_django_model_by_xmi_id(xmi_id : str) -> DjangoModel:
+def find_loaded_django_model_by_xmi_id(xmi_id : str) -> DjangoModel:
     found_model = None
     for model in settings.DJANGO_MODELS:
         if model.xmi_id == xmi_id:

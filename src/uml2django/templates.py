@@ -6,7 +6,7 @@ def getTemplatePath(filename: str, directory="") -> str:
         filename = f"{filename}.tmpl"
     template_path = os.path.join(
         os.path.dirname(templates.__file__),
-        "templates",
+        "cheetah_templates",
         directory,
         filename,
     )
@@ -15,7 +15,7 @@ def getTemplatePath(filename: str, directory="") -> str:
 def getAppTemplatePath(filename: str, directory="") -> str:
     template_path = os.path.join(
         os.path.dirname(templates.__file__),
-        "templates",
+        "cheetah_templates",
         "app",
         directory,
         filename,

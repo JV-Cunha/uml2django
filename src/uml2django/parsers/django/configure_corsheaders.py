@@ -4,8 +4,8 @@ from os.path import exists as file_exists
 from uml2django import settings
 from redbaron import RedBaron
 
-from uml2django.processDocument.file_reader import file_reader
-from uml2django.processDocument.file_writer import file_writer
+from uml2django.parsers.files.file_reader import file_reader
+from uml2django.parsers.files.file_writer import file_writer
 
 
 def configure_corsheaders() -> None:

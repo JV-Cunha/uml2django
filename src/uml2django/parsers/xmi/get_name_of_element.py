@@ -1,7 +1,7 @@
 from xml.dom import minidom
 
 
-def get_xmi_association_name(association_element: minidom.Element):
+def get_name_from_element(association_element: minidom.Element):
     association_name = association_element.attributes.get(
         "name"
     ).value if association_element.hasAttribute(

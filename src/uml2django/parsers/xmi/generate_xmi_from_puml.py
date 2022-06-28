@@ -1,6 +1,6 @@
 import subprocess
 import sys
-from uml2django.processDocument import is_valid_file
+from uml2django.parsers.files.enforce_is_valid_file import is_valid_file
 
 
 def generate_xmi_from_puml(puml_filename: str) -> str:

@@ -9,16 +9,12 @@ import os
 import sys
 from typing import List
 from uml2django import _logger, settings
-from uml2django.processDocument import (
-    read_xmi_file,
-    generate_xmi_from_puml,
-    start_django_project,
-)
+
 from uml2django.argparser import parse_args
-from uml2django.processDocument.DjangoModel import DjangoModel
-from uml2django.processDocument import get_django_models_from_minidom_document
-from uml2django.processDocument.configure_corsheaders import configure_corsheaders
-from uml2django.processDocument.generate_prepare_database import generate_prepare_database
+from uml2django.objects.DjangoModel import DjangoModel
+from uml2django.parsers.django.configure_corsheaders import configure_corsheaders
+from uml2django.parsers.django.generate_prepare_database import generate_prepare_database
+from uml2django.parsers.django.start_django_project import start_django_project
 
 __author__ = "Joao Victor Soares da Cunha"
 __copyright__ = "Joao Victor Soares da Cunha"
@@ -38,10 +34,10 @@ def main(args: List[str]):
         django_model.generate_model_python_file()
         if not django_model.is_abstract:
             django_model.generate_rest_api()
-            # django_model.generate_model_forms()
-            # django_model.generate_class_based_views()
+            django_model.generate_model_forms()
+            django_model.generate_class_based_views()
             django_model.generate_cbv_urls_routing()
-            # django_model.generate_templates()
+            django_model.generate_templates()
     
     generate_prepare_database()
     configure_corsheaders()

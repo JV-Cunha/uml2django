@@ -21,7 +21,9 @@ class ${model.name}Serializer(serializers.ModelSerializer):
     #for $nested_object in $model.rest_api_writable_nested_objects
     ${nested_object.name_lower}_set = ${$nested_object}Serializer(
         # source='${$nested_object.name_lower}_set',
-        many=True
+        many=True,
+        required=False, 
+        allow_null=True
     )
     #end for
     

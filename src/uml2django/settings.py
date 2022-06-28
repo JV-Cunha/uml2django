@@ -3,7 +3,7 @@ from xml.dom.expatbuilder import DOCUMENT_NODE
 
 class settings:
     DOCUMENT_OBJECT_MODEL = None
-    DJANGO_MODELS = None
+    DJANGO_MODELS = []
     DJANGO_MODELS_NAMES = []
 
     UML2DJANGO_GENERATE_DJANGO_PROJECT = True

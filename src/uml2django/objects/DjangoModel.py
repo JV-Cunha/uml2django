@@ -17,13 +17,15 @@ from uml2django.XmiArgoUmlTagsNames import (
     XMI_ARGO_STEREOTYPE_TAG_NAME
 )
 from uml2django import _logger
-from uml2django.processDocument import add_import_to_init_file
-from uml2django.processDocument.file_reader import file_reader
-from uml2django.processDocument.file_writer import append_target_to_from_import, file_writer
-from uml2django.processDocument.get_substring_between_parenthesis import get_sub_string_between_parenthesis
-from uml2django.processDocument.is_element_abstract import is_element_abstract
+from uml2django.parsers.xmi.is_xmi_element_abstract import is_xmi_element_abstract
+from uml2django.parsers.files.add_import_to_init_file import add_import_to_init_file
+from uml2django.parsers.files.file_reader import file_reader
+from uml2django.parsers.python.append_target_to_from_import import append_target_to_from_import
+from uml2django.parsers.files.file_writer import file_writer
 
-from uml2django.processDocument.DjangoModelField import DjangoModelField
+from uml2django.parsers.files.get_substring_between_parenthesis import get_sub_string_between_parenthesis
+
+from uml2django.objects.DjangoModelField import DjangoModelField
 
 
 class DjangoModel():
@@ -54,7 +56,7 @@ class DjangoModel():
             sys.exit(1)
         self.element = element
         self.xmi_id = element.attributes.get("xmi.id").value
-        self.is_abstract = is_element_abstract(self.element)
+        self.is_abstract = is_xmi_element_abstract(self.element)
         self.setNamesFromElement()
         self.setFieldsFromElement()
         self.setPaths()

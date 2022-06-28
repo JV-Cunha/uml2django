@@ -6,8 +6,8 @@ from django.core import management as django_management
 from redbaron import RedBaron
 
 from uml2django import settings, _logger
-from uml2django.processDocument.file_reader import file_reader
-from uml2django.processDocument.file_writer import file_writer
+from uml2django.parsers.files.file_reader import file_reader
+from uml2django.parsers.files.file_writer import file_writer
 
 
 def start_django_project():

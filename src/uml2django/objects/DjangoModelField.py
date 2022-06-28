@@ -11,6 +11,7 @@ class DjangoModelField():
     field_options = None
     visibility = None
     unique = False
+    uml2django_field_options = []
 
     def __init__(self, element: minidom.Element = None):
         if not element:
@@ -65,6 +66,7 @@ class DjangoModelField():
         foreign_key_has_related_name = False
         foreign_key_has_related_query_name = False
         # loop through field options and values
+        
         for field_option in self.field_options:
             # if field options is 'verbose_name'
             has_verbose_name = True if field_option.startswith(
@@ -72,6 +74,7 @@ class DjangoModelField():
             # if field options is 'help_text'
             has_help_text = True if field_option.startswith(
                 "help_text") else False
+            
             # if field type is char field
             if self.field_type == "CharField":
                 # check if have a 'max_length' option
@@ -79,7 +82,11 @@ class DjangoModelField():
                     "max_length") else False
         
 
+            # if field type is ForeignKey
             if self.field_type == "ForeignKey":
+                if field_option.startswith("uml2django_"):
+                    self.uml2django_field_options.append(field_option)
+                    self.field_options.remove(field_option)
                 foreign_key_has_on_delete = True if field_option.startswith(
                     "on_delete") else False
                 foreign_key_has_related_name = True if field_option.startswith(
