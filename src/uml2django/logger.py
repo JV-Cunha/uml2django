@@ -6,6 +6,8 @@ _logger = logging.getLogger(__name__)
 
 
 def setup_logging(loglevel):
+    _logger = logging.getLogger(__name__)
+    
     """Setup basic logging
 
     Args:

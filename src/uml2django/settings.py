@@ -1,7 +1,9 @@
+import logging
 from xml.dom.expatbuilder import DOCUMENT_NODE
 
 
 class settings:
+    LOG_LEVEL = logging.INFO
     DOCUMENT_OBJECT_MODEL = None
     DJANGO_MODELS = []
     DJANGO_MODELS_NAMES = []

@@ -1,6 +1,4 @@
 from redbaron import RedBaron
-from uml2django import _logger
-from uml2django.parsers.files.file_reader import file_reader
 
 
 

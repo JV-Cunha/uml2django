@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 import json
@@ -10,13 +11,12 @@ import inflect
 
 
 from uml2django import templates
-from uml2django import settings
-from uml2django.XmiArgoUmlTagsNames import (
+from uml2django.settings import settings
+from uml2django.parsers.xmi.XmiArgoUmlTagsNames import (
     XMI_ARGO_ATTRIBUTE_TAG_NAME,
     XMI_ARGO_OPERATION_TAG_NAME,
     XMI_ARGO_STEREOTYPE_TAG_NAME
 )
-from uml2django import _logger
 from uml2django.parsers.xmi.is_xmi_element_abstract import is_xmi_element_abstract
 from uml2django.parsers.files.add_import_to_init_file import add_import_to_init_file
 from uml2django.parsers.files.file_reader import file_reader
@@ -50,7 +50,7 @@ class DjangoModel():
 
     def __init__(self, element: minidom.Element = None):
         if not element:
-            _logger.debug(
+            logging.getLogger(__name__).debug(
                 "An element must be given to construct DjangoModel object"
             )
             sys.exit(1)
@@ -77,14 +77,14 @@ class DjangoModel():
         )
         operations = [str(opration_element.getAttribute("name"))
                       for opration_element in operation_elements]
-        # _logger.debug(f"XMI_ARGO_STEREOTYPE_TAG_NAME: {operation_elements}")
+        # logging.getLogger(__name__).debug(f"XMI_ARGO_STEREOTYPE_TAG_NAME: {operation_elements}")
         for operation in operations:
             # check if should use slug field
             if operation.startswith("use_slug"):
                 self.use_slug = True
                 self.slugify_field = get_sub_string_between_parenthesis(
                     operation)
-                _logger.debug(f"USE_SLUG:: {self.use_slug}")
+                logging.getLogger(__name__).debug(f"USE_SLUG:: {self.use_slug}")
             # check if have unique together fields
             if operation.startswith("unique_together"):
                 self.unique_together_fields = get_sub_string_between_parenthesis(
@@ -110,7 +110,7 @@ class DjangoModel():
 
     def add_base_father(self, django_model):
         self.base_fathers.append(django_model)
-        _logger.debug(
+        logging.getLogger(__name__).debug(
             f"{str(self)} fathers: {[str(father) for father in self.base_fathers]}")
 
     def generate_model_forms(self):
@@ -419,7 +419,7 @@ class DjangoModel():
             settings.UML2DJANGO_OUTPUT_PATH,
             self.app_name,
         )
-        _logger.debug(f"OUTPUT_PATH: {settings.UML2DJANGO_OUTPUT_PATH}")
+        logging.getLogger(__name__).debug(f"OUTPUT_PATH: {settings.UML2DJANGO_OUTPUT_PATH}")
         # App urls.py path
         self.app_urls_file_path = os.path.join(
             self.app_path,

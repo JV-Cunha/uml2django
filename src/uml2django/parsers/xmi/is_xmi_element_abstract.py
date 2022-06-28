@@ -1,5 +1,5 @@
 from xml.dom import minidom
-from uml2django.XmiArgoUmlTagsNames import XMI_ARGO_CLASS_ABSTRACT_ATTRIBUTE
+from uml2django.parsers.xmi.XmiArgoUmlTagsNames import XMI_ARGO_CLASS_ABSTRACT_ATTRIBUTE
 
 
 def is_xmi_element_abstract(element: minidom.Element) -> bool:

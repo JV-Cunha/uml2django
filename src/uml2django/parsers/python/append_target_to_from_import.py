@@ -1,5 +1,5 @@
+import logging
 from redbaron import RedBaron
-from uml2django import _logger
 from uml2django.parsers.files.file_reader import file_reader
 from uml2django.parsers.files.file_writer import file_writer
 
@@ -17,7 +17,7 @@ def append_target_to_from_import(
     if target:
         targets.append(target)
     
-    _logger.debug(f"APPENDING {targets} to {import_name}")
+    logging.getLogger(__name__).debug(f"APPENDING {targets} to {import_name}")
     # read file and parse to RedBaron object
     file_node = RedBaron(file_reader(file_path))
     # get all from import nodes

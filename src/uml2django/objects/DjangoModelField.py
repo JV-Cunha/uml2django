@@ -1,8 +1,8 @@
 
+import logging
 import sys
 from xml.dom import minidom
-from uml2django import settings
-from uml2django import _logger
+from uml2django.settings import settings
 
 
 class DjangoModelField():
@@ -15,14 +15,14 @@ class DjangoModelField():
 
     def __init__(self, element: minidom.Element = None):
         if not element:
-            _logger.debug("An element must be given")
+            logging.getLogger(__name__).debug("An element must be given")
             sys.exit(1)
         self.element = element
         visibility_attr = element.attributes.get("visibility")
         if visibility_attr:
             if visibility_attr.value == "protected":
                 self.unique = True
-                _logger.debug(f"{self.name} UNIQUE ")
+                logging.getLogger(__name__).debug(f"{self.name} UNIQUE ")
         self.set_name_from_element()
         self.fillNameAndFieldType()
 

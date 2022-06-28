@@ -1,6 +1,7 @@
 import os
 from Cheetah.Template import Template
-from uml2django import settings, templates
+from uml2django import templates
+from uml2django.settings import settings
 
 from uml2django.parsers.files.file_writer import file_writer
 

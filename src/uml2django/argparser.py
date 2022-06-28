@@ -6,9 +6,9 @@ from typing import List
 from pathlib import Path
 
 from uml2django import __version__
-from uml2django import settings
+from uml2django.settings import settings
 from uml2django import _logger, setup_logging
-from uml2django.XmiArgoUmlTagsNames import (
+from uml2django.parsers.xmi.XmiArgoUmlTagsNames import (
     XMI_ARGO_ASSOCIATION_TAG_NAME,
     XMI_ARGO_CLASS_TAG_NAME
 )
@@ -121,7 +121,8 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     )
 
     parsed_args = parser.parse_args(args)
-    setup_logging(parsed_args.loglevel)
+    settings.LOG_LEVEL = parsed_args.loglevel
+    setup_logging(settings.LOG_LEVEL)
 
     # Configure Output Path
     if parsed_args.output_path:
@@ -129,7 +130,7 @@ def parse_args(args: List[str]) -> argparse.Namespace:
     # Check if output path exists
     if os.path.isdir(settings.UML2DJANGO_OUTPUT_PATH):
         if settings.UML2DJANGO_OVERRIDE:
-            _logger.debug("OVERRIDE OUTPUT")
+            logging.getLogger(__name__).debug("OVERRIDE OUTPUT")
             # remove the directory and all it's content
             shutil.rmtree(settings.UML2DJANGO_OUTPUT_PATH)
     # Create path if not exists or if exists and is a file

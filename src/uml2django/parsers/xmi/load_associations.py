@@ -1,6 +1,6 @@
-from uml2django import settings
-from uml2django import _logger
-from uml2django.XmiArgoUmlTagsNames import (
+import logging
+from uml2django.settings import settings
+from uml2django.parsers.xmi.XmiArgoUmlTagsNames import (
     XMI_ARGO_ASSOCIATION_TAG_NAME, XMI_ARGO_CLASS_TAG_NAME
 )
 from uml2django.parsers.settings.find_loaded_django_model_by_xmi_id import find_loaded_django_model_by_xmi_id
@@ -13,7 +13,7 @@ def load_associations():
     association_elements = settings.DOCUMENT_OBJECT_MODEL.documentElement.getElementsByTagName(
         XMI_ARGO_ASSOCIATION_TAG_NAME
     )
-    _logger.debug(f"Found {len(association_elements)} associations elements")
+    logging.getLogger(__name__).debug(f"Found {len(association_elements)} associations elements")
 
     # loop through each association element
     for association_element in association_elements:
@@ -22,7 +22,7 @@ def load_associations():
         
         # if is an inheritance
         if association_name == "inherit":
-            _logger.debug("Inheritance association")
+            logging.getLogger(__name__).debug("Inheritance association")
             # get the classes elements inside the association element
             association_classes_elements = association_element.getElementsByTagName(
                 XMI_ARGO_CLASS_TAG_NAME
@@ -43,7 +43,7 @@ def load_associations():
                     model
                 )
             
-            _logger.debug(f"associated models: {[str(model) for model in associated_models]}")
+            logging.getLogger(__name__).debug(f"associated models: {[str(model) for model in associated_models]}")
             abstract_model = None
             not_abstract_model = None
             base_model = associated_models[0]

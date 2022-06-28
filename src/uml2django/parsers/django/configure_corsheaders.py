@@ -1,7 +1,7 @@
 import os
 from os.path import exists as file_exists
 
-from uml2django import settings
+from uml2django.settings import settings
 from redbaron import RedBaron
 
 from uml2django.parsers.files.file_reader import file_reader

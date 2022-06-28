@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 import shutil
@@ -5,7 +6,7 @@ from django.core import management as django_management
 
 from redbaron import RedBaron
 
-from uml2django import settings, _logger
+from uml2django.settings import settings
 from uml2django.parsers.files.file_reader import file_reader
 from uml2django.parsers.files.file_writer import file_writer
 
@@ -19,10 +20,10 @@ def start_django_project():
             f"{settings.UML2DJANGO_OUTPUT_PATH}"
         )
     )
-    _logger.debug("Created Django Project")
+    logging.getLogger(__name__).debug("Created Django Project")
 
     # START APPS
-    _logger.debug(f"APPS_NAMES: {settings.UML2DJANGO_APPS_NAMES}")
+    logging.getLogger(__name__).debug(f"APPS_NAMES: {settings.UML2DJANGO_APPS_NAMES}")
     for app_name in settings.UML2DJANGO_APPS_NAMES:
         app_path = os.path.join(
             f"{settings.UML2DJANGO_OUTPUT_PATH}",

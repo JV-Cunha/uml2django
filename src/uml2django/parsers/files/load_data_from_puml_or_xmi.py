@@ -1,4 +1,4 @@
-from uml2django import settings
+from uml2django.settings import settings
 from uml2django.parsers.xmi.generate_xmi_from_puml import generate_xmi_from_puml
 from uml2django.parsers.xmi.get_django_models_from_xmi_document import get_django_models_from_xmi_document
 from uml2django.parsers.xmi.load_associations import load_associations
