@@ -7,6 +7,7 @@ from uml2django.settings import settings
 
 class DjangoModelField():
     name = None
+    name_label = None
     field_type = None
     field_options = None
     visibility = None
@@ -38,6 +39,7 @@ class DjangoModelField():
         name = name.split(" ")
         name = "_".join(list(filter(None, name)))
         self.name = name
+        self.name_label = " ".join(name.split("_")).capitalize()
 
     def fillNameAndFieldType(self) -> None:
         # If no field type was informed
@@ -66,7 +68,7 @@ class DjangoModelField():
         foreign_key_has_related_name = False
         foreign_key_has_related_query_name = False
         # loop through field options and values
-        
+
         for field_option in self.field_options:
             # if field options is 'verbose_name'
             has_verbose_name = True if field_option.startswith(
@@ -74,13 +76,12 @@ class DjangoModelField():
             # if field options is 'help_text'
             has_help_text = True if field_option.startswith(
                 "help_text") else False
-            
+
             # if field type is char field
             if self.field_type == "CharField":
                 # check if have a 'max_length' option
                 char_field_has_max_length = True if field_option.startswith(
                     "max_length") else False
-        
 
             # if field type is ForeignKey
             if self.field_type == "ForeignKey":
@@ -93,10 +94,10 @@ class DjangoModelField():
                     "related_name") else False
                 foreign_key_has_related_query_name = True if field_option.startswith(
                     "related_query_name") else False
-        
+
         if self.unique:
             self.field_options.append("unique=True")
-            
+
         if not has_verbose_name:
             verbose_name = " ".join(self.name.split("_"))
             self.field_options.append(f"verbose_name=_('{verbose_name}')")
@@ -114,8 +115,7 @@ class DjangoModelField():
             self.field_options.append(
                 f"on_delete={settings.UML2DJANGO_FOREIGNKEY_ON_DELETE}"
             )
-        
-        
+
         # if self.field_type == "ForeignKey" and not foreign_key_has_related_name:
         #     # self.field_options.append(
         #         # f"related_name={}"

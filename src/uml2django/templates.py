@@ -1,6 +1,17 @@
 import os
 from uml2django import templates
 
+
+def getSvelteDaisyTemplate(filename: str):
+    template_path = os.path.join(
+        os.path.dirname(templates.__file__),
+        "cheetah_templates",
+        "svelte", "daisy",
+        filename,
+    )
+    return template_path
+
+
 def getTemplatePath(filename: str, directory="") -> str:
     if not filename.endswith(".tmpl"):
         filename = f"{filename}.tmpl"
@@ -11,6 +22,7 @@ def getTemplatePath(filename: str, directory="") -> str:
         filename,
     )
     return template_path
+
 
 def getAppTemplatePath(filename: str, directory="") -> str:
     template_path = os.path.join(
@@ -25,6 +37,7 @@ def getAppTemplatePath(filename: str, directory="") -> str:
 
 def getViewsTemplatePath(filename: str) -> str:
     return getAppTemplatePath(filename, "views")
+
 
 PREPARE_DATABASE = getTemplatePath(
     "prepare_database"
@@ -57,3 +70,8 @@ DELETE_VIEW_TEMPLATE_PATH = getViewsTemplatePath("DeleteView.tmpl")
 DETAIL_VIEW_TEMPLATE_PATH = getViewsTemplatePath("DetailView.tmpl")
 LIST_VIEW_TEMPLATE_PATH = getViewsTemplatePath("ListView.tmpl")
 UPDATE_VIEW_TEMPLATE_PATH = getViewsTemplatePath("UpdateView.tmpl")
+
+SVELTE_CARBON_MODEL_FORM = getTemplatePath("CarbonModelForm.svelte", "svelte")
+SVELTE_DAISY_LIB = getSvelteDaisyTemplate("lib")
+SVELTE_DAISY_LIB_SIDEBAR = os.path.join(
+    SVELTE_DAISY_LIB, "Sidebar.svelte.tmpl")

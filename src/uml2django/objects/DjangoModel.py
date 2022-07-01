@@ -84,29 +84,35 @@ class DjangoModel():
                 self.use_slug = True
                 self.slugify_field = get_sub_string_between_parenthesis(
                     operation)
-                logging.getLogger(__name__).debug(f"USE_SLUG:: {self.use_slug}")
+                logging.getLogger(__name__).debug(
+                    f"USE_SLUG:: {self.use_slug}")
             # check if have unique together fields
             if operation.startswith("unique_together"):
                 self.unique_together_fields = get_sub_string_between_parenthesis(
                     operation).split(",")
+            # Allow to user add related objects inside self serializer
             if operation.startswith("rest_api_writable_nested_objects"):
-                objects_list = get_sub_string_between_parenthesis(
+                related_objects_list = get_sub_string_between_parenthesis(
                     operation).split(",")
-                for object_name in objects_list:
-                    if object_name not in objects.DJANGO_MODELS_NAMES:
+                for related_object_name in related_objects_list:
+                    # If object not loadd raise error
+                    if related_object_name not in objects.DJANGO_MODELS_NAMES:
                         raise AttributeError(
-                            f"rest_api_writable_nested_objects: Object {object_name} not found"
+                            f"rest_api_writable_nested_objects: Object {related_object_name} not found"
                         )
-                    django_model = [
-                        dj_m for dj_m in objects.DJANGO_MODELS if dj_m.name == object_name]
+                    related_django_models_object = [
+                        dj_m for dj_m in objects.DJANGO_MODELS if dj_m.name == related_object_name]
 
-                    if len(django_model) > 1:
+                    # If find more than one object with the same name
+                    # raise an error
+                    if len(related_django_models_object) > 1:
                         raise AttributeError(
-                            f"rest_api_writable_nested_objects: Object {object_name} is duplcated, models must have unique names"
+                            f"rest_api_writable_nested_objects: Object {related_object_name} is duplcated, models must have unique names"
                         )
 
                     self.rest_api_writable_nested_objects.append(
-                        django_model[0])
+                        related_django_models_object[0]
+                    )
 
     def add_base_father(self, django_model):
         self.base_fathers.append(django_model)
@@ -223,7 +229,7 @@ class DjangoModel():
             self.app_tests_init_file_path,
             f"from .{self.name_lower} import {self.name}ViewsTest\n"
         )
-        
+
         # append views to model urls_paths
         for view_name in self.actions:
             cap_view_name = view_name.capitalize()
@@ -419,7 +425,8 @@ class DjangoModel():
             settings.UML2DJANGO_OUTPUT_PATH,
             self.app_name,
         )
-        logging.getLogger(__name__).debug(f"OUTPUT_PATH: {settings.UML2DJANGO_OUTPUT_PATH}")
+        logging.getLogger(__name__).debug(
+            f"OUTPUT_PATH: {settings.UML2DJANGO_OUTPUT_PATH}")
         # App urls.py path
         self.app_urls_file_path = os.path.join(
             self.app_path,
