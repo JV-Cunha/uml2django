@@ -75,3 +75,6 @@ SVELTE_CARBON_MODEL_FORM = getTemplatePath("CarbonModelForm.svelte", "svelte")
 SVELTE_DAISY_LIB = getSvelteDaisyTemplate("lib")
 SVELTE_DAISY_LIB_SIDEBAR = os.path.join(
     SVELTE_DAISY_LIB, "Sidebar.svelte.tmpl")
+SVELTE_DAISY_ROUTES_PATH = getSvelteDaisyTemplate("routes")
+SVELTE_DAISY_ROUTES_LIST_PATH = os.path.join(
+    SVELTE_DAISY_ROUTES_PATH, "ModelList.svelte.tmpl")
