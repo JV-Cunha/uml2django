@@ -10,7 +10,7 @@
 <Navbar {is_sidebar_open}></Navbar>
 <div class="drawer drawer-mobile">
     <input id="my-drawer-2" bind:checked={is_sidebar_open} type="checkbox" class="drawer-toggle" />
-    <div class="drawer-content flex flex-col items-center justify-center">
+    <div class="drawer-content flex flex-col p-2">
       
       <slot></slot>
     
@@ -26,8 +26,6 @@
 		padding: 0;
 		margin: 0;
 	}
-    main{
-        padding: 0;
-    }
+    
 
 </style>

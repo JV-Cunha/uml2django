@@ -77,4 +77,4 @@ SVELTE_DAISY_LIB_SIDEBAR = os.path.join(
     SVELTE_DAISY_LIB, "Sidebar.svelte.tmpl")
 SVELTE_DAISY_ROUTES_PATH = getSvelteDaisyTemplate("routes")
 SVELTE_DAISY_ROUTES_LIST_PATH = os.path.join(
-    SVELTE_DAISY_ROUTES_PATH, "ModelList.svelte.tmpl")
+    SVELTE_DAISY_ROUTES_PATH, "model_list.svelte.tmpl")

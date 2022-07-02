@@ -7,7 +7,7 @@
 
 <div class="drawer-side">
       <label for="my-drawer-2" class="drawer-overlay"></label> 
-      <ul id="menu-list" class="menu  menu-compact overflow-y-auto mr-4 bg-base-200 ">
+      <ul id="menu-list" class="menu  menu-compact overflow-y-auto bg-base-200 ">
         #for $app_name in $apps_and_its_models:
         <SidebarMenuTitle>$app_name.capitalize</SidebarMenuTitle>
         #for $model in $apps_and_its_models[$app_name]:

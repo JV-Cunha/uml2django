@@ -1,0 +1,57 @@
+<script context="module">
+    export async function load({fetch}){
+        const res = await fetch(
+            "http://127.0.0.1:8000/$model.app_name/$model.name_lower/?format=json"
+        )
+        const ${model.name_lower}_list = await res.json();
+
+        if (res.ok) {
+            return {props: {${model.name_lower}_list}}
+        }   
+        return "error"
+    }
+</script>
+
+<script>
+    export let ${model.name_lower}_list;
+
+    import {Icon} from '@steeze-ui/svelte-icon'
+    import {Plus} from '@steeze-ui/heroicons'
+</script>
+<div class="overflow-x-auto px-2">
+    <div class="flex  mb-2 "> 
+        <div class="flex h-full mr-2 items-center align-center"> 
+        <h1 class="text-xl text-primary" >$model.name</h1>
+    </div>
+        <div class="flex flex-1 justify-end"> 
+
+        <button class="btn btn-outline btn-accent  btn-sm ">
+            New
+        </button>
+    </div>
+    </div>
+    <table class="table table-compact w-full m-0">
+        <tr>
+            #for $field in $model.fields
+            <td class="text-accent">$field.name_label</td> 
+            #end for
+
+        </tr>
+      <tbody>
+        {#each ${model.name_lower}_list as ${model.name_lower}}
+            <tr class="hover">
+                #for $field in $model.fields
+                <td>{${model.name_lower}.${field.name}}</td>
+                #end for
+            </tr>
+        {/each}
+      </tbody> 
+      <tfoot>
+        
+      </tfoot>
+    </table>
+  </div>
+
+
+
+
