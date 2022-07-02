@@ -3,16 +3,20 @@
 
 	import Navbar from '../lib/Navbar.svelte';
 	import Sidebar from '../lib/Sidebar.svelte';
+    let is_sidebar_open;
 
+    
 </script>
-
-<Navbar />
-
-<main class="flex flex-1 bg-base-100 py-3" >
-<Sidebar />
-    <slot />
-</main>
-
+<Navbar {is_sidebar_open}></Navbar>
+<div class="drawer drawer-mobile">
+    <input id="my-drawer-2" bind:checked={is_sidebar_open} type="checkbox" class="drawer-toggle" />
+    <div class="drawer-content flex flex-col items-center justify-center">
+      
+      <slot></slot>
+    
+    </div> 
+    <Sidebar bind:is_sidebar_open></Sidebar>
+  </div>
 <style>
 	:global(html, body, body>div) {
 		height: 100%;
