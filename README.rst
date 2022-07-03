@@ -14,6 +14,11 @@ It able to generate:
 * Templates
 * Tests
 
+Django Rest Framework
+* Serializers
+* ApiViews
+* Routers
+
 **Quick start**
 ===============
 
@@ -144,6 +149,7 @@ To define an Meta inheritance the base model must use the plantuml ``abstract`` 
     @enduml
 
 **Models Options**
+
 ------------------
 You can inform some options that will change the behavior of the model and the code generated for it.
 

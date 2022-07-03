@@ -3,7 +3,7 @@ from uml2django.settings import settings
 from uml2django.parsers.xmi.XmiArgoUmlTagsNames import (
     XMI_ARGO_ASSOCIATION_TAG_NAME, XMI_ARGO_CLASS_TAG_NAME
 )
-from uml2django.parsers.settings.find_loaded_django_model_by_xmi_id import find_loaded_django_model_by_xmi_id
+from uml2django.objects.find_loaded_django_model_by_xmi_id import find_loaded_django_model_by_xmi_id
 from uml2django.parsers.xmi.get_name_of_element import get_name_from_element
 from uml2django.parsers.xmi.get_xmi_id_of_element import get_xmi_id_of_element
 

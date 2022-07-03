@@ -1,0 +1,43 @@
+@startuml
+left to right direction
+package testapp {
+    class ExampleTestModel << Stereotype_1 >> << Stereotype_2 >> {
+        ' AUTOFIELDS
+        ' {field} smallAuto_field : SmallAutoField()
+        ' {field} auto_field : AutoField()
+        ' {field} big_auto_field : BigAutoField()
+        {field} big_integer_field : BigIntegerField()
+        ' {field}  binary_field : BinaryField()
+        {field} boolean_field : BooleanField()
+        {field} -char_field : CharField(max_length=30)
+        {field} #date_field : DateField()
+        {field} ~date_time_field : DateTimeField()
+        {field} +decimal_field : DecimalField(max_digits=9,decimal_places=4)
+        {field} duration_field : DurationField()
+        {field} email_field : EmailField()
+        {field} file_field : FileField()
+        ' {field} filePath_field : FilePathField()
+        {field} float_field : FloatField()
+        {field} generic_ip_address_field : GenericIPAddressField()
+        ' {field} image_field : ImageField()
+        {field} integer_field : IntegerField()
+        {field} json_field : JSONField()
+        {field} positive_big_integer_field : PositiveBigIntegerField()
+        {field} positive_Integer_field : PositiveIntegerField()
+        {field} positive_small_integer_field : PositiveSmallIntegerField()
+        {field} slug_field : SlugField()
+        {field} smallInteger_field : SmallIntegerField()
+        {field} text_field : TextField()
+        {field} time_field : TimeField()
+        {field} url_field : URLField()
+        {field} uuid_field : UUIDField()
+        ' {field} manyToMany_field : ManyToManyField()
+        ' {field} oneToOne_field : OneToOneField()
+        ' {field} foreing_key : ForeignKey()
+    }
+    class SecondModel {
+        name
+        other_char_field
+    }
+}
+@enduml
