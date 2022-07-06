@@ -35,3 +35,8 @@ def configure_corsheaders() -> None:
         "\nCORS_ALLOWED_ORIGINS = [\"http://127.0.0.1:3000\"]\n",
         override=False
     )
+    file_writer(
+        django_project_settings_file_path,
+        "CORS_ALLOW_CREDENTIALS = True\n",
+        override=False
+    )
