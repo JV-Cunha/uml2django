@@ -20,7 +20,6 @@ def configure_corsheaders() -> None:
         # Parse code with RedBaron
         file_reader(django_project_settings_file_path)
     )
-    django_project_settings_node.find_all("from_import")
     existing_middlewares_nodes = django_project_settings_node.find(
         "name", value="MIDDLEWARE").parent.value
     middlewares = [node.dumps() for node in existing_middlewares_nodes]
