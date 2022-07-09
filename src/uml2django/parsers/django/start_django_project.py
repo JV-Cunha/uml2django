@@ -82,6 +82,9 @@ def start_django_project():
     # write settings.py
     file_writer(django_project_settings_file_path, settings_node.dumps())
 
+    # Add console email backend config
+    file_writer(django_project_settings_file_path, "\nEMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'\n",override=False)
+
     # ADD APPS URLS TO PROJECT URLS.PY
     django_project_urls_file_path = os.path.join(
         settings.UML2DJANGO_OUTPUT_PATH,
