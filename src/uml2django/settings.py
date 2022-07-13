@@ -10,7 +10,8 @@ class settings:
     UML2DJANGO_GENERATE_DJANGO_INSTALLED_APPS_REQUIREMENTS = [
         "corsheaders",
         "rest_framework",
-        "crispy_forms"
+        "crispy_forms",
+        "custom_auth"
     ]
     UML2DJANGO_PROJECT_NAME = None
     UML2DJANGO_APPS_NAMES = []

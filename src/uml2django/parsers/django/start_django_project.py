@@ -5,7 +5,7 @@ import shutil
 from django.core import management as django_management
 
 from redbaron import RedBaron
-from uml2django import objects
+from uml2django import objects, templates
 
 from uml2django.settings import settings
 from uml2django.parsers.files.file_reader import file_reader
@@ -81,10 +81,11 @@ def start_django_project():
 
     # write settings.py
     file_writer(django_project_settings_file_path, settings_node.dumps())
-
-    # Add console email backend config
-    file_writer(django_project_settings_file_path, "\nEMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'\n",override=False)
-
+    file_writer(django_project_settings_file_path, "\nfrom custom_auth.auth_settings import *\n",override=False)
+    # REST_FRAMEWORK = {'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',)}
+    source_dir = templates.CUSTOM_AUTH_APP_PATH
+    destination_dir = os.path.join(settings.UML2DJANGO_OUTPUT_PATH, "custom_auth")
+    shutil.copytree(source_dir, destination_dir)
     # ADD APPS URLS TO PROJECT URLS.PY
     django_project_urls_file_path = os.path.join(
         settings.UML2DJANGO_OUTPUT_PATH,
@@ -128,6 +129,9 @@ def start_django_project():
     # append the include directive for each app_name
     for app_name in objects.UML2DJANGO_APPS_NAMES:
         existing_urls.append(f"path('{app_name}/', include('{app_name}.urls'))")
+    
+    # append custom_auth urls
+    existing_urls.append(f"path('auth/', include('custom_auth.urls'))")
         
 
     # Set the urls_patterns nodes value

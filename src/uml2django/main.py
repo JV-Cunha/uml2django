@@ -15,6 +15,8 @@ from uml2django.objects.DjangoModel import DjangoModel
 from uml2django.parsers.django.configure_corsheaders import configure_corsheaders
 from uml2django.parsers.django.generate_prepare_database import generate_prepare_database
 from uml2django.parsers.django.start_django_project import start_django_project
+from uml2django.parsers.svelte.generate_daisy_model_list import generate_daisy_model_list
+from uml2django.parsers.svelte.start_svelte_app import start_svelte_app
 
 __author__ = "Joao Victor Soares da Cunha"
 __copyright__ = "Joao Victor Soares da Cunha"
@@ -29,7 +31,8 @@ def main(args: List[str]):
     args = parse_args(args)
     if settings.UML2DJANGO_GENERATE_DJANGO_PROJECT:
         start_django_project()
-    
+    start_svelte_app()
+
     for django_model in objects.DJANGO_MODELS:
         django_model.generate_model_python_file()
         if not django_model.is_abstract:
@@ -38,7 +41,8 @@ def main(args: List[str]):
             django_model.generate_class_based_views()
             django_model.generate_cbv_urls_routing()
             django_model.generate_templates()
-    
+            generate_daisy_model_list(django_model)
+
     generate_prepare_database()
     configure_corsheaders()
     sys.exit(1)
