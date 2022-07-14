@@ -28,15 +28,17 @@ class WebUserLoginSerializer(ModelSerializer):
         if password is None:
             raise ValidationError('A password is required to login.')
 
-        user = authenticate(email=email, password=password)
-
         webuser = WebUser.objects.get(email=email)
+        
+        if not webuser.check_password(password):
+            raise ValidationError({'password': ['Wrong password']})
+        
         if webuser:
             if not webuser.is_active:
                 raise ValidationError('This user is not currently activated.')
 
-        if user is None:
-            raise ValidationError({'password': ['Wrong password']})
+        
+        user = authenticate(email=email, password=password)
 
 
         return user
