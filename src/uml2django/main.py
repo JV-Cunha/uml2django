@@ -31,20 +31,20 @@ def main(args: List[str]):
     args = parse_args(args)
     if settings.UML2DJANGO_GENERATE_DJANGO_PROJECT:
         start_django_project()
-    start_svelte_app()
 
     for django_model in objects.DJANGO_MODELS:
         django_model.generate_model_python_file()
         if not django_model.is_abstract:
             django_model.generate_rest_api()
-            django_model.generate_model_forms()
-            django_model.generate_class_based_views()
-            django_model.generate_cbv_urls_routing()
-            django_model.generate_templates()
+            # django_model.generate_model_forms()
+            # django_model.generate_class_based_views()
+            django_model.generate_urls_routing()
+            # django_model.generate_templates()
             generate_daisy_model_list(django_model)
 
     generate_prepare_database()
     configure_corsheaders()
+    start_svelte_app()
     sys.exit(1)
 
 
