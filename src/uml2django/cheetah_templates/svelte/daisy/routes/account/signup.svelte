@@ -122,7 +122,7 @@
       <button type="submit" class="btn btn-primary my-4">Signup</button>
 
       <h1 class="text-md text-base-content">Already have an account?</h1>
-      <a href="accounts/signup" class="btn btn-accent my-4">Login</a>
+      <a href="/accounts/signup" class="btn btn-accent my-4">Login</a>
     </div>
   </form>
 </div>

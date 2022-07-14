@@ -101,7 +101,7 @@ import { refreshTokenIsValid } from '$lib/auth';
       <button type="submit" class="btn btn-accent my-4">Login</button>
 
       <h1 class="text-md text-base-content">Does not have an account?</h1>
-      <a href="accounts/signup" class="btn btn-primary my-4">Signup</a>
+      <a href="/accounts/signup" class="btn btn-primary my-4">Signup</a>
     </div>
   </form>
 </div>
