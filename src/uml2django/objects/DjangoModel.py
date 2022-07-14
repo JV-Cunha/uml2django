@@ -254,8 +254,7 @@ class DjangoModel():
                     f"{self.name}{cap_view_name}View",
                     f"{self.name_lower}-{view_name}"
                 ))
-
-    def generate_cbv_urls_routing(self):
+    def generate_urls_routing(self):
         # create app path if not exists
         Path(self.app_path).mkdir(parents=True, exist_ok=True)
         existing_url_patterns = []
@@ -329,19 +328,19 @@ class DjangoModel():
         # existing_urls.append("path('', include(router.urls))")
         # url_patterns_nodes.value = ",\n\t".join(existing_urls) + "\n"
         # file_writer(self.app_urls_file_path.dumps())
-        add_import_to_init_file(
-            self.app_rest_api_init_file_path,
-            ""
-        )
 
     def generate_rest_api_viewset(self):
+        # create rest_api views path
         Path(
             self.app_rest_api_views_path
         ).mkdir(parents=True, exist_ok=True)
+        
+        # add import to __init__ file
         add_import_to_init_file(
             self.app_rest_api_views_init_file_path,
             f"from .{self.name}ViewSet import {self.name}ViewSet\n"
         )
+        # Write viewset from template
         django_model_viewset_template = self.get_template_object(
             template_path=templates.REST_API_MODEL_VIEWSET_TEMPLATE_PATH
         )
@@ -349,6 +348,8 @@ class DjangoModel():
             file_path=self.app_rest_api_views_model_viewset_path,
             content=(str(django_model_viewset_template))
         )
+        
+        # viewset router
         if not os.path.exists(self.app_rest_api_router_path):
             # if app router file not exists
             # generate and write router file
@@ -358,7 +359,7 @@ class DjangoModel():
             file_writer(self.app_rest_api_router_path, str(router_template))
         else:
             # if exists
-            # append modelviewset import import statement
+            # append modelviewset import statement
             append_target_to_from_import(
                 file_path=self.app_rest_api_router_path,
                 import_name=f"{self.app_name}.rest_api.views",
