@@ -71,6 +71,12 @@ DETAIL_VIEW_TEMPLATE_PATH = getViewsTemplatePath("DetailView.tmpl")
 LIST_VIEW_TEMPLATE_PATH = getViewsTemplatePath("ListView.tmpl")
 UPDATE_VIEW_TEMPLATE_PATH = getViewsTemplatePath("UpdateView.tmpl")
 
+CUSTOM_AUTH_APP_PATH = os.path.join(
+    os.path.dirname(templates.__file__),
+    "cheetah_templates",
+    "custom_auth"
+)
+
 SVELTE_CARBON_MODEL_FORM = getTemplatePath("CarbonModelForm.svelte", "svelte")
 SVELTE_DAISY_LIB = getSvelteDaisyTemplate("lib")
 SVELTE_DAISY_LIB_SIDEBAR = os.path.join(
