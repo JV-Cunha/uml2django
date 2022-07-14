@@ -45,6 +45,7 @@ def start_svelte_app(ui_library=UI_LIBRARY.DAISY):
     # subprocess.check_call('npm --help', shell=True)
     subprocess.run(["npm", "create", "svelte"], cwd=svelte_app_path)
     subprocess.run(["npm", "install"], cwd=svelte_app_path)
+    install_dev_dependency("uuid")
 
     if ui_library == UI_LIBRARY.DAISY:
         install_dev_dependency("daisyui")
