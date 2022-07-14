@@ -26,15 +26,17 @@ package educational {
         {field} end_date : DateField()
     }
     class Subject {
-        use_slug(name)
-        rest_api_writable_nested_objects(SubjectLevel,SubjectRequirement)
         {field} #title : CharField(max_length=255)
         {field} #name : CharField(max_length=255)
+
+        use_slug(name)
+        rest_api_writable_nested_objects(SubjectLevel,SubjectRequirement)
     }
     class SubjectLevel {
         {field} subject : ForeignKey('Subject')
         {field} title : CharField(max_length=255)
         {field} description : TextField()
+        
         unique_together(subject,title)
     }
     class SubjectRequirement {
@@ -46,7 +48,7 @@ package educational {
         {field} subject : ForeignKey('Subject')
         {field} subject_level : ForeignKey('SubjectLevel')
         {field} title : CharField(max_length=255)
-        {field} capacity : IntegerField()
+        {field} capacity : PositiveIntegerField()
         {field} start_date : DateField()
         {field} end_date : DateField()
     }
@@ -55,21 +57,25 @@ package educational {
         {field} day_of_week : CharField(max_length=255)
         {field} from_hour : TimeField()
         {field} to_time : TimeField()
+        
         unique_together(subject_class,day_of_week,from_hour,to_time) 
     }
 }
 package infrastructure {
     class Building{
+        {field} #name : CharField(max_length=255)
+        
         use_slug(name)
         rest_api_writable_nested_objects(WorkingPeriod)
-        {field} #name : CharField(max_length=255)
     }
     class ClassRoom {
+        {field} building : ForeignKey('Building')
+        {field} capacity : PositiveIntegerField()
+        {field} name : CharField(max_length=255)
+
         use_slug(name)
         rest_api_writable_nested_objects(WorkingPeriod)
-        {field} building : ForeignKey('Building')
-        {field} name : CharField(max_length=255)
-        unique_together(building,name) 
+        unique_together(building,name)
     }
     class WorkingPeriod  {
         {field} building : ForeignKey('Building')
