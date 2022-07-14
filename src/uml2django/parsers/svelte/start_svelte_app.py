@@ -45,6 +45,7 @@ def start_svelte_app(ui_library=UI_LIBRARY.DAISY):
     # subprocess.check_call('npm --help', shell=True)
     subprocess.run(["npm", "create", "svelte"], cwd=svelte_app_path)
     subprocess.run(["npm", "install"], cwd=svelte_app_path)
+    install_dev_dependency("uuid")
 
     if ui_library == UI_LIBRARY.DAISY:
         install_dev_dependency("daisyui")
@@ -90,13 +91,31 @@ def start_svelte_app(ui_library=UI_LIBRARY.DAISY):
             layout_template_path,
             svelte_app_path_layout_path,
         )
+
+        # copy lib path
         svelte_app_lib_path = os.path.join(
             svelte_app_path, "src", "lib"
         )
         Path(svelte_app_lib_path).mkdir(
             parents=True, exist_ok=True
         )
+        for file in os.listdir(templates.SVELTE_DAISY_LIB):
+            file_path = os.path.join(templates.SVELTE_DAISY_LIB, file)
+            if not os.path.isdir(os.path.abspath(file_path)):
+                if not templates.SVELTE_DAISY_LIB_SIDEBAR.endswith(file):
+                    shutil.copyfile(
+                        os.path.join(templates.SVELTE_DAISY_LIB, file),
+                        os.path.join(svelte_app_lib_path,
+                                     file[:-5] if file.endswith("tmpl") else file)
+                    )
+            else:
+                shutil.copytree(
+                    file_path, os.path.join(svelte_app_lib_path, file),
+                    symlinks=False, ignore=None,
+                    ignore_dangling_symlinks=False, dirs_exist_ok=True,
+                )
 
+        # fill sidebar
         side_bar_template_obj = Template(
             file=templates.SVELTE_DAISY_LIB_SIDEBAR)
         apps_and_its_models = {}
@@ -111,9 +130,13 @@ def start_svelte_app(ui_library=UI_LIBRARY.DAISY):
             content=str(side_bar_template_obj)
         )
 
-        for file in os.listdir(templates.SVELTE_DAISY_LIB):
-            if not templates.SVELTE_DAISY_LIB_SIDEBAR.endswith(file):
-                shutil.copyfile(
-                    os.path.join(templates.SVELTE_DAISY_LIB, file),
-                    os.path.join(svelte_app_lib_path, file[:-5])
-                )
+        src = os.path.join(
+            templates.SVELTE_DAISY_ROUTES_PATH, 'account'
+        )
+        dst = os.path.join(
+            svelte_app_path, 'src', 'routes', 'account'
+        )
+        shutil.copytree(
+            src, dst, symlinks=False, ignore=None,
+            ignore_dangling_symlinks=False, dirs_exist_ok=False
+        )

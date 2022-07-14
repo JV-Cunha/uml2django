@@ -1,7 +1,7 @@
 # Ignore uml2django output files
 uml2django_output
 exampleproject
-
+*.xmi
 # Temporary and binary files
 *~
 *.py[cod]

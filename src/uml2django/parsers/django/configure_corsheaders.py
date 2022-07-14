@@ -31,7 +31,7 @@ def configure_corsheaders() -> None:
                 django_project_settings_node.dumps())
     file_writer(
         django_project_settings_file_path,
-        "\nCORS_ALLOWED_ORIGINS = [\"http://127.0.0.1:3000\"]\n",
+        "\nCORS_ALLOWED_ORIGINS = [\"http://127.0.0.1:5173\"]\n",
         override=False
     )
     file_writer(

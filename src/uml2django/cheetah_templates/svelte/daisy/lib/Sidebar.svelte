@@ -1,4 +1,3 @@
-
 <script>
     import SidebarMenuTitle from "./SidebarMenuTitle.svelte"
 	import SidebarMenuItem from './SidebarMenuItem.svelte';

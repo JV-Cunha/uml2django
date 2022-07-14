@@ -11,4 +11,9 @@ module.exports = {
     prefix: "",
     darkTheme: "halloween",
   },
+  safelist: [
+    {
+      pattern: /alert-*/,
+    },
+  ]
 }

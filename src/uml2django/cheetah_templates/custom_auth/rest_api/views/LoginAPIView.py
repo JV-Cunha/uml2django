@@ -10,6 +10,7 @@ from custom_auth.rest_api.serializers import (
 )
 
 class LoginAPIView(APIView):
+
     permission_classes = (AllowAny,)
     serializer_class = WebUserLoginSerializer
 
