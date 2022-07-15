@@ -26,7 +26,7 @@ export const refreshTokenIsValid = async (): Promise<boolean> => {
     browserStorageSetAuthAccessToken(access_token);
     let webuser = get(webuser_data);
     webuser.email = 'xx';
-    webuser_data.update(() => webuser);
+    webuser_data.set(webuser);
     return true;
   }
   return false;

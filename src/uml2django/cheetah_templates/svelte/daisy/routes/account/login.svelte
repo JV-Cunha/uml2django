@@ -1,17 +1,16 @@
-<script context="module">
-import { goto } from '$app/navigation';
-import { refreshTokenIsValid } from '$lib/auth';
-</script>
-
 <script lang="ts">
-  import {
-    browserStorageSetAuthRefreshToken,
-  } from '$lib/browserStorage';
+  import { browserStorageSetAuthRefreshToken } from '$lib/browserStorage';
+  import { goto } from '$app/navigation';
   import { BASE_API_URI } from '$lib/constants';
   import { notifications_data } from '$lib/stores/notificationsStore';
   import { onMount } from 'svelte';
   import { webuser_data } from '$lib/stores/webuserStore';
   import { addNotification } from '$lib/notifications';
+  import { get as get_store_value } from 'svelte/store';
+  if (webuser_data.email) {
+    console.log(webuser_data.email);
+    
+  }
   let email = 'j@jjoao.com',
     password = '137Trimetl',
     form_errors = {};
