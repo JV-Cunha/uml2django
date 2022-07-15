@@ -11,7 +11,7 @@ import { refreshTokenIsValid } from '$lib/auth';
   import { notifications_data } from '$lib/stores/notificationsStore';
   import { onMount } from 'svelte';
   import { webuser_data } from '$lib/stores/webuserStore';
-  import { v4 as uuidv4 } from 'uuid';
+  import { addNotification } from '$lib/notifications';
   let email = 'j@jjoao.com',
     password = '137Trimetl',
     form_errors = {};
@@ -37,15 +37,13 @@ import { refreshTokenIsValid } from '$lib/auth';
 
       browserStorageSetAuthRefreshToken(json_response.tokens.refresh);
       //   success notification
-      $notifications_data[uuidv4()] = {
-        type: 'success',
-        message: 'Welcome back.',
-      };
+      addNotification('success', 'Welcome back.');
+      console.log(get_store_value(notifications_data));
+
       //   await goto('/');
     } else {
-      console.log(json_response);
       form_errors = json_response;
-      console.log(json_response.non_field_errors);
+      addNotification('error', 'Login Failed.');
     }
   };
 
