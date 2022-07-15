@@ -1,7 +1,17 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store';
+
 interface WebUser {
-        email: string
+  email: string;
+  tokens: {
+    access: string;
+    refresh: string;
+  };
 }
-export const webuser_data = writable<WebUser>({email: ""})
 
-
+export const webuser_data = writable<WebUser>({
+  email: '',
+  tokens: {
+    access: '',
+    refresh: '',
+  },
+});
