@@ -3,11 +3,13 @@
 
 	import Navbar from '../lib/Navbar.svelte';
 	import Sidebar from '../lib/Sidebar.svelte';
+  import NotificationsContainer from '$lib/NotificationsContainer.svelte';
     let is_sidebar_open;
 
     
 </script>
 <Navbar {is_sidebar_open}></Navbar>
+<NotificationsContainer />
 <div class="drawer drawer-mobile">
     <input id="my-drawer-2" bind:checked={is_sidebar_open} type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col p-2 overflow-x-auto overflow-y-auto">

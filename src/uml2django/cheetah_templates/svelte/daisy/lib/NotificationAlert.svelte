@@ -9,7 +9,7 @@
     uuid: { type: "success" | "error" | "info"; message: String };
   }
   export let notification_uuid: string,
-    timeout = 40100;
+    timeout = 4000;
 
    let notification = $notifications_data[notification_uuid];
    $: notification_class_type = 'alert-' + notification.type;
