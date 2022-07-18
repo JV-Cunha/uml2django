@@ -2,10 +2,11 @@ import { get } from 'svelte/store';
 import {
   browserStorageGetAuthRefreshToken,
   browserStorageSetAuthAccessToken,
-  browserStorageSetAuthRefreshToken,
 } from './browserStorage';
 import { BASE_API_URI } from './constants';
 import { webuser_data } from './stores/webuserStore';
+import { goto } from '$app/navigation';
+import { addNotification } from './notifications';
 
 export const refreshTokenIsValid = async (): Promise<boolean> => {
   const res = await fetch(`${BASE_API_URI}/auth/token/refresh`, {
@@ -26,8 +27,15 @@ export const refreshTokenIsValid = async (): Promise<boolean> => {
     browserStorageSetAuthAccessToken(access_token);
     let webuser = get(webuser_data);
     webuser.email = 'xx';
-    webuser_data.set(webuser);
+    webuser_data.update(() => webuser);
     return true;
   }
   return false;
 };
+
+export const requireNotLoggedUser = () => {
+    if (get(webuser_data).email) {
+        goto('/');
+        addNotification('info', 'You are already logged.');
+      }
+}

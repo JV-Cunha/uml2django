@@ -1,10 +1,20 @@
 <script lang="ts">
-    import { browserStorageGet, browserStorageSet, browserStorageSetAuthAccessToken } from '$lib/browserStorage';
+    import {
+      browserStorageGet,
+      browserStorageSet,
+      browserStorageSetAuthAccessToken,
+      browserStorageSetAuthRefreshToken,
+    } from '$lib/browserStorage';
     import { goto } from '$app/navigation';
     import { BASE_API_URI } from '$lib/constants';
     import { onMount } from 'svelte';
     import { webuser_data } from '$lib/stores/webuserStore';
-  import { addNotification } from '$lib/notifications';
+  
+    import { addNotification } from '$lib/notifications';
+    import { requireNotLoggedUser } from '$lib/auth';
+    
+    requireNotLoggedUser();
+    
     let email = 'j@jjoao.com',
       password = '137Trimetl',
       password_confirmation = '137Trimetl',
@@ -38,11 +48,10 @@
       let json_response = await jsonRes.json();
       if (response_status_code == 201) {
         webuser_data.set(json_response);
-        addNotification("success", "Signup success");
-        browserStorageSetAuthAccessToken($webuser_data.tokens.access)
-        browserStorageSetAuthAccessToken($webuser_data.tokens.access)
-        goto("/")
-  
+        addNotification('success', 'Signup success');
+        goto('/');
+        browserStorageSetAuthAccessToken($webuser_data.tokens.access);
+        browserStorageSetAuthRefreshToken($webuser_data.tokens.refresh);
       } else {
         console.log(json_response);
         form_errors = json_response;
